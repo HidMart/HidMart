@@ -1,34 +1,50 @@
-import hidmart
+from hidmart import Bot
 
 
-TOKEN = "توکن_ربات_بله"
-
-bot = hidmart.Bot(
-    token=TOKEN,
-    base_url="API_BASE_URL"
+bot = Bot(
+    "YOUR_BOT_TOKEN"
 )
 
 
+@bot.on_command("start")
+async def start(message):
+
+    await message.reply(
+        "سلام 👋\n"
+        "ربات با HidMart اجرا شد!"
+    )
+
+
+@bot.on_command(
+    "help",
+    "راهنما"
+)
+async def help_command(message):
+
+    await message.reply(
+        "راهنمای ربات\n\n"
+        "/start - شروع\n"
+        "/help - راهنما"
+    )
+
+
+@bot.on_text("سلام")
+async def hello(message):
+
+    await message.reply(
+        "سلام! 👋"
+    )
+
+
 @bot.on_message()
-def message_handler(data):
-    chat = data.get("chat", {})
-    chat_id = chat.get("id")
+async def messages(message):
 
-    text = data.get("text", "")
+    if not message.text:
+        return
 
-    if text == "/start":
-        bot.send_message(
-            chat_id,
-            "سلام!\nبه ربات HidMart خوش آمدید."
-        )
-
-    elif text == "/help":
-        bot.send_message(
-            chat_id,
-            "دستورات ربات:\n"
-            "/start\n"
-            "/help"
-        )
+    await message.reply(
+        f"شما گفتید:\n{message.text}"
+    )
 
 
 bot.run()
