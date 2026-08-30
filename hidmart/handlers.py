@@ -1,27 +1,58 @@
-from typing import Callable, List
+import inspect
 
 
-class HandlerManager:
-    def __init__(self):
-        self.message_handlers: List[Callable] = []
-        self.callback_handlers: List[Callable] = []
+class Handler:
 
-    def add_message_handler(self, handler: Callable):
-        self.message_handlers.append(handler)
+    def __init__(self, callback):
+        self.callback = callback
 
-    def add_callback_handler(self, handler: Callable):
-        self.callback_handlers.append(handler)
+    async def run(self, message):
+        result = self.callback(message)
 
-    def handle_message(self, data):
-        for handler in self.message_handlers:
-            try:
-                handler(data)
-            except Exception as error:
-                print(f"[HidMart] Handler error: {error}")
+        if inspect.isawaitable(result):
+            await result
 
-    def handle_callback(self, data):
-        for handler in self.callback_handlers:
-            try:
-                handler(data)
-            except Exception as error:
-                print(f"[HidMart] Callback handler error: {error}")
+
+class CommandHandler(Handler):
+
+    def __init__(self, command, callback):
+        super().__init__(callback)
+
+        self.commands = {
+            command.lstrip("/").lower()
+        }
+
+    def matches(self, message):
+
+        if not message.text:
+            return False
+
+        text = message.text.strip()
+
+        if not text.startswith("/"):
+            return False
+
+        command = text[1:].split()[0].lower()
+
+        return command in self.commands
+
+
+class MessageHandler(Handler):
+
+    def matches(self, message):
+        return bool(message.text)
+
+
+class TextHandler(Handler):
+
+    def __init__(self, text, callback):
+        super().__init__(callback)
+
+        self.text = text
+
+    def matches(self, message):
+
+        if not message.text:
+            return False
+
+        return message.text == self.text
