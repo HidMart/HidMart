@@ -1,19 +1,27 @@
 from .bot import Bot
-from .types import Message, User, Chat
+from .client import BaleClient
+from .handlers import Dispatcher
+from .types import User, Message, Chat
 from .exceptions import (
     HidMartError,
     APIError,
-    NetworkError
+    AuthenticationError,
+    ConnectionError,
+    TimeoutError,
 )
 
 __version__ = "0.1.0"
 
 __all__ = [
     "Bot",
-    "Message",
+    "BaleClient",
+    "Dispatcher",
     "User",
+    "Message",
     "Chat",
     "HidMartError",
     "APIError",
-    "NetworkError",
+    "AuthenticationError",
+    "ConnectionError",
+    "TimeoutError",
 ]
