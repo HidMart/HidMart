@@ -1,18 +1,26 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "HidMart"
-version = "1.0.0"
-description = "Python library for building Bale bots"
+name = "hidmart"
+version = "0.2.0"
+description = "Async Python framework for building token-based bots for Bale Messenger"
 readme = "README.md"
-requires-python = ">=3.8"
-license = {file = "LICENSE"}
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
+authors = [
+    {name = "HidMart Team"}
+]
 
 dependencies = [
-    "requests>=2.28.0"
+    "httpx>=0.27,<1.0"
 ]
+
+[project.urls]
+Homepage = "https://github.com/programmersatlantis-hash/HidMart"
+Repository = "https://github.com/programmersatlantis-hash/HidMart"
 
 [tool.setuptools.packages.find]
 include = ["hidmart*"]
