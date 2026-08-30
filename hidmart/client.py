@@ -1,106 +1,40 @@
-import asyncio
-from typing import Any, Dict, Optional
+import requests
 
-from .exceptions import (
-    APIError,
-    AuthenticationError,
-    ConnectionError,
-)
+from .exceptions import APIError, NetworkError
 
 
-class BaleClient:
-    """
-    Async client for HidMart.
-
-    The transport layer is intentionally kept separate from
-    the higher-level bot API.
-    """
-
-    def __init__(
-        self,
-        token: str,
-        base_url: str = "https://tapi.bale.ai",
-        timeout: float = 30.0,
-    ):
-        if not token:
-            raise AuthenticationError("Bot token is required.")
-
+class Client:
+    def __init__(self, token: str, base_url: str):
         self.token = token
         self.base_url = base_url.rstrip("/")
-        self.timeout = timeout
 
-        self.session = None
-        self.connected = False
+        self.session = requests.Session()
+        self.session.headers.update({
+            "User-Agent": "HidMart/1.0.0"
+        })
 
-    async def connect(self):
-        """
-        Initialize the client.
+    def request(self, method: str, data=None):
+        url = f"{self.base_url}/{method}"
 
-        The actual Bale transport can be plugged into this layer
-        without changing the bot interface.
-        """
-        self.connected = True
-        return self
+        try:
+            response = self.session.post(
+                url,
+                json=data or {},
+                timeout=30
+            )
+        except requests.RequestException as error:
+            raise NetworkError(str(error)) from error
 
-    async def close(self):
-        if self.session is not None:
-            close = getattr(self.session, "close", None)
-
-            if close is not None:
-                result = close()
-
-                if asyncio.iscoroutine(result):
-                    await result
-
-        self.session = None
-        self.connected = False
-
-    async def __aenter__(self):
-        await self.connect()
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.close()
-
-    async def request(
-        self,
-        method: str,
-        data: Optional[Dict[str, Any]] = None,
-    ) -> Any:
-        """
-        Low-level API request.
-
-        This method is the central point for implementing
-        the real Bale transport.
-        """
-        if not self.connected:
-            raise ConnectionError(
-                "Client is not connected. Call await client.connect()."
+        try:
+            result = response.json()
+        except ValueError:
+            raise APIError(
+                f"Invalid response from Bale API: {response.text}"
             )
 
-        raise NotImplementedError(
-            "Bale transport has not been configured yet."
-        )
-
-    async def call(
-        self,
-        service: str,
-        method: str,
-        **kwargs,
-    ):
-        """
-        Call a service method.
-
-        Example:
-
-            await client.call(
-                "Messaging",
-                "SomeMethod",
-                chat_id="123",
+        if not response.ok:
+            raise APIError(
+                result.get("description", "Bale API request failed")
             )
-        """
 
-        return await self.request(
-            f"{service}.{method}",
-            kwargs,
-        )
+        return result
