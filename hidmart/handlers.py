@@ -1,40 +1,19 @@
-import inspect
+from typing import Awaitable, Callable, List
+
+from .types import Message
 
 
-class Handler:
-
-    def __init__(self, callback):
-        self.callback = callback
-
-    async def run(self, message):
-        result = self.callback(message)
-
-        if inspect.isawaitable(result):
-            await result
+Handler = Callable[[Message], Awaitable[None]]
 
 
-class CommandHandler(Handler):
+class Dispatcher:
+    def __init__(self):
+        self._handlers: List[Handler] = []
 
-    def __init__(self, command, callback):
-        super().__init__(callback)
+    def message(self, handler: Handler):
+        self._handlers.append(handler)
+        return handler
 
-        self.command = command.lstrip("/").lower()
-
-    def matches(self, message):
-        if not message.text:
-            return False
-
-        text = message.text.strip()
-
-        if not text.startswith("/"):
-            return False
-
-        command = text[1:].split()[0].lower()
-
-        return command == self.command
-
-
-class MessageHandler(Handler):
-
-    def matches(self, message):
-        return bool(message.text)
+    async def dispatch(self, message: Message):
+        for handler in self._handlers:
+            await handler(message)
