@@ -1,27 +1,34 @@
-import asyncio
-
-from hidmart import Bot, Dispatcher
+import hidmart
 
 
-TOKEN = "YOUR_BALE_BOT_TOKEN"
+TOKEN = "توکن_ربات_بله"
+
+bot = hidmart.Bot(
+    token=TOKEN,
+    base_url="API_BASE_URL"
+)
 
 
-async def main():
-    bot = Bot(TOKEN)
-    dispatcher = Dispatcher()
+@bot.on_message()
+def message_handler(data):
+    chat = data.get("chat", {})
+    chat_id = chat.get("id")
 
-    @dispatcher.message
-    async def on_message(message):
-        print("Message:", message.text)
+    text = data.get("text", "")
 
-    await bot.start()
+    if text == "/start":
+        bot.send_message(
+            chat_id,
+            "سلام!\nبه ربات HidMart خوش آمدید."
+        )
 
-    print("HidMart bot started.")
+    elif text == "/help":
+        bot.send_message(
+            chat_id,
+            "دستورات ربات:\n"
+            "/start\n"
+            "/help"
+        )
 
-    # Bot logic goes here.
 
-    await bot.stop()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+bot.run()
