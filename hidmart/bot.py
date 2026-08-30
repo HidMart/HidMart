@@ -1,110 +1,425 @@
-import time
-from typing import Callable, Optional
+import asyncio
+import logging
 
-from .client import Client
-from .handlers import HandlerManager
+from .client import BaleClient
+from .types import Message
+from .handlers import (
+    CommandHandler,
+    MessageHandler,
+    TextHandler,
+)
+
+
+logger = logging.getLogger("hidmart")
 
 
 class Bot:
+
     def __init__(
         self,
         token: str,
-        base_url: str,
-        polling_interval: float = 1.0
+        poll_interval: float = 1.0,
+        timeout: int = 25,
     ):
-        self.token = token
-        self.polling_interval = polling_interval
 
-        self.client = Client(
-            token=token,
-            base_url=base_url
+        if not token:
+            raise ValueError(
+                "Bot token is required"
+            )
+
+        self.token = token
+
+        self.poll_interval = poll_interval
+        self.timeout = timeout
+
+        self.client = BaleClient(
+            token
         )
 
-        self.handlers = HandlerManager()
+        self.handlers = []
+
         self.running = False
 
-        self._offset: Optional[int] = None
+        self.offset = None
+
+        self.me = None
+
+    # -------------------------
+    # Handlers
+    # -------------------------
+
+    def on_command(self, *commands):
+
+        if not commands:
+            raise ValueError(
+                "At least one command is required"
+            )
+
+        def decorator(callback):
+
+            for command in commands:
+
+                self.handlers.append(
+                    CommandHandler(
+                        command,
+                        callback,
+                    )
+                )
+
+            return callback
+
+        return decorator
 
     def on_message(self):
-        def decorator(func: Callable):
-            self.handlers.add_message_handler(func)
-            return func
+
+        def decorator(callback):
+
+            self.handlers.append(
+                MessageHandler(
+                    callback
+                )
+            )
+
+            return callback
 
         return decorator
 
-    def on_callback(self):
-        def decorator(func: Callable):
-            self.handlers.add_callback_handler(func)
-            return func
+    def on_text(self, text):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                TextHandler(
+                    text,
+                    callback,
+                )
+            )
+
+            return callback
 
         return decorator
 
-    def send_message(
+    # -------------------------
+    # API methods
+    # -------------------------
+
+    async def send_message(
         self,
         chat_id,
         text,
-        **kwargs
+        **kwargs,
     ):
-        data = {
-            "chat_id": chat_id,
-            "text": text,
-            **kwargs
-        }
 
-        return self.client.request(
-            "sendMessage",
-            data
+        return await self.client.send_message(
+            chat_id,
+            text,
+            **kwargs,
         )
 
-    def get_updates(self):
-        data = {}
+    async def send_photo(
+        self,
+        chat_id,
+        photo,
+        caption=None,
+        **kwargs,
+    ):
 
-        if self._offset is not None:
-            data["offset"] = self._offset
-
-        return self.client.request(
-            "getUpdates",
-            data
+        return await self.client.send_photo(
+            chat_id,
+            photo,
+            caption,
+            **kwargs,
         )
 
-    def run(self):
+    async def send_video(
+        self,
+        chat_id,
+        video,
+        caption=None,
+        **kwargs,
+    ):
+
+        return await self.client.send_video(
+            chat_id,
+            video,
+            caption,
+            **kwargs,
+        )
+
+    async def send_audio(
+        self,
+        chat_id,
+        audio,
+        caption=None,
+        **kwargs,
+    ):
+
+        return await self.client.send_audio(
+            chat_id,
+            audio,
+            caption,
+            **kwargs,
+        )
+
+    async def send_document(
+        self,
+        chat_id,
+        document,
+        caption=None,
+        **kwargs,
+    ):
+
+        return await self.client.send_document(
+            chat_id,
+            document,
+            caption,
+            **kwargs,
+        )
+
+    async def send_voice(
+        self,
+        chat_id,
+        voice,
+        caption=None,
+        **kwargs,
+    ):
+
+        return await self.client.send_voice(
+            chat_id,
+            voice,
+            caption,
+            **kwargs,
+        )
+
+    async def send_location(
+        self,
+        chat_id,
+        latitude,
+        longitude,
+        **kwargs,
+    ):
+
+        return await self.client.send_location(
+            chat_id,
+            latitude,
+            longitude,
+            **kwargs,
+        )
+
+    async def edit_message_text(
+        self,
+        chat_id,
+        message_id,
+        text,
+        **kwargs,
+    ):
+
+        return await self.client.edit_message_text(
+            chat_id,
+            message_id,
+            text,
+            **kwargs,
+        )
+
+    async def delete_message(
+        self,
+        chat_id,
+        message_id,
+    ):
+
+        return await self.client.delete_message(
+            chat_id,
+            message_id,
+        )
+
+    async def get_me(self):
+
+        self.me = await self.client.get_me()
+
+        return self.me
+
+    async def get_chat(self, chat_id):
+
+        return await self.client.get_chat(
+            chat_id
+        )
+
+    async def get_chat_member(
+        self,
+        chat_id,
+        user_id,
+    ):
+
+        return await self.client.get_chat_member(
+            chat_id,
+            user_id,
+        )
+
+    async def get_updates(
+        self,
+        offset=None,
+        timeout=None,
+        limit=None,
+    ):
+
+        if timeout is None:
+            timeout = self.timeout
+
+        return await self.client.get_updates(
+            offset=offset,
+            timeout=timeout,
+            limit=limit,
+        )
+
+    # -------------------------
+    # Update processing
+    # -------------------------
+
+    async def process_update(
+        self,
+        update,
+    ):
+
+        if not isinstance(update, dict):
+            return
+
+        message_data = update.get(
+            "message"
+        )
+
+        if not message_data:
+            return
+
+        message = Message.from_dict(
+            message_data,
+            bot=self,
+        )
+
+        for handler in self.handlers:
+
+            try:
+
+                if hasattr(
+                    handler,
+                    "matches",
+                ):
+
+                    if not handler.matches(
+                        message
+                    ):
+                        continue
+
+                await handler.run(
+                    message
+                )
+
+            except Exception:
+
+                logger.exception(
+                    "Handler error"
+                )
+
+    # -------------------------
+    # Polling
+    # -------------------------
+
+    async def polling(self):
+
         self.running = True
 
-        print("[HidMart] Bot is running...")
+        logger.info(
+            "HidMart polling started"
+        )
 
         while self.running:
-            try:
-                result = self.get_updates()
 
-                updates = result.get("result", [])
+            try:
+
+                updates = await self.get_updates(
+                    offset=self.offset
+                )
+
+                if not updates:
+
+                    await asyncio.sleep(
+                        self.poll_interval
+                    )
+
+                    continue
 
                 for update in updates:
-                    update_id = update.get("update_id")
+
+                    update_id = update.get(
+                        "update_id"
+                    )
 
                     if update_id is not None:
-                        self._offset = update_id + 1
 
-                    self._process_update(update)
+                        self.offset = (
+                            update_id + 1
+                        )
 
-            except KeyboardInterrupt:
-                self.off()
+                    await self.process_update(
+                        update
+                    )
+
+            except asyncio.CancelledError:
+
                 break
 
-            except Exception as error:
-                print(f"[HidMart] Error: {error}")
-                time.sleep(self.polling_interval)
+            except Exception:
 
-    def _process_update(self, update):
-        if "message" in update:
-            self.handlers.handle_message(
-                update["message"]
-            )
+                logger.exception(
+                    "Polling error"
+                )
 
-        elif "callback_query" in update:
-            self.handlers.handle_callback(
-                update["callback_query"]
-            )
+                await asyncio.sleep(
+                    3
+                )
 
-    def off(self):
+        logger.info(
+            "HidMart polling stopped"
+        )
+
+    async def start(self):
+
+        self.running = True
+
+        self.me = await self.get_me()
+
+        logger.info(
+            "Bot started: %s",
+            self.me,
+        )
+
+        await self.polling()
+
+    async def stop(self):
+
         self.running = False
-        print("[HidMart] Bot stopped.")
+
+        await self.client.close()
+
+    async def _run(self):
+
+        try:
+
+            await self.start()
+
+        finally:
+
+            await self.client.close()
+
+    def run(self):
+
+        try:
+
+            asyncio.run(
+                self._run()
+            )
+
+        except KeyboardInterrupt:
+
+            logger.info(
+                "HidMart stopped by user"
+            )
