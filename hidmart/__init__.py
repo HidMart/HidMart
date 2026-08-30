@@ -1,11 +1,29 @@
 from .bot import Bot
-from .client import Client
-from .exceptions import HidMartError
 
-__version__ = "1.0.0"
+from .types import (
+    Message,
+    User,
+    Chat,
+)
+
+from .exceptions import (
+    HidMartError,
+    APIError,
+    NetworkError,
+    InvalidTokenError,
+)
+
+
+__version__ = "0.2.0"
+
 
 __all__ = [
     "Bot",
-    "Client",
+    "Message",
+    "User",
+    "Chat",
     "HidMartError",
+    "APIError",
+    "NetworkError",
+    "InvalidTokenError",
 ]
