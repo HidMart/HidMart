@@ -1,21 +1,24 @@
-HidMart
+# HidMart
 
-<div align="center">HidMart
+<div align="center">
 
-Async Python Framework for Bale Messenger Bots
+# HidMart
 
-""Python" (https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)" (https://www.python.org/)
+### Async Python Framework for Bale Messenger Bots
 
-""GitHub" (https://img.shields.io/badge/GitHub-HidMart-black?logo=github)" (https://github.com/programmersatlantis-hash/HidMart)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)](https://www.python.org/)
+[![GitHub](https://img.shields.io/badge/GitHub-HidMart-black?logo=github)](https://github.com/programmersatlantis-hash/HidMart)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/programmersatlantis-hash/HidMart)
 
-""License" (https://img.shields.io/badge/License-MIT-green.svg)" (https://github.com/programmersatlantis-hash/HidMart)
+</div>
 
-</div>---
+---
 
-Installation
+## Installation
 
-Install the latest version of HidMart directly from GitHub.
+Install the latest version of **HidMart** directly from GitHub.
 
-Install with pip
+### Install with pip
 
+```bash
 pip install https://github.com/programmersatlantis-hash/HidMart/archive/main.zip --force-reinstall
