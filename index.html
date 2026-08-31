@@ -17,8 +17,8 @@
 
         body {
             margin: 0;
-            background: #000000;
-            color: #ffffff;
+            background: #000;
+            color: #fff;
             font-family: Tahoma, Arial, sans-serif;
             line-height: 1.9;
         }
@@ -62,7 +62,7 @@
             top: 0;
             z-index: 10;
             border-bottom: 1px solid #222;
-            background: rgba(0, 0, 0, 0.96);
+            background: rgba(0, 0, 0, .96);
             padding: 14px 20px;
         }
 
@@ -198,6 +198,14 @@
             text-decoration: underline;
         }
 
+        .warning {
+            border-right: 3px solid #555;
+            background: #080808;
+            padding: 15px 18px;
+            margin: 20px 0;
+            color: #bbb;
+        }
+
         footer {
             border-top: 1px solid #222;
             padding: 35px 20px;
@@ -228,11 +236,11 @@
         <h1>HidMart</h1>
 
         <div class="subtitle">
-            کتابخانه Python برای ساخت ربات در بله
+            Async Python Framework for Bale Messenger Bots
         </div>
 
         <div class="version">
-            Version 0.2.0
+            Version 0.3.0
         </div>
     </div>
 </header>
@@ -243,8 +251,9 @@
         <a href="#install">نصب</a>
         <a href="#quickstart">شروع سریع</a>
         <a href="#bot">Bot</a>
-        <a href="#handlers">Handler</a>
+        <a href="#handlers">Handlerها</a>
         <a href="#message">Message</a>
+        <a href="#media">Media</a>
         <a href="#user">User</a>
         <a href="#chat">Chat</a>
         <a href="#sending">ارسال</a>
@@ -258,21 +267,42 @@
 
     <div class="notice">
         <strong>HidMart Documentation</strong>
+
         <p>
-            مستندات رسمی کتابخانه HidMart برای توسعه ربات‌های Python
-            در پیام‌رسان بله.
+            مستندات رسمی HidMart برای ساخت ربات‌های
+            asynchronous در پیام‌رسان بله.
+        </p>
+
+        <p>
+            نسخه فعلی: <strong>0.3.0</strong>
         </p>
     </div>
+
+
+    <!-- FEATURES -->
 
     <section id="features">
         <h2>قابلیت‌ها</h2>
 
         <ul>
             <li>ساخت Bot</li>
-            <li>دریافت پیام</li>
+            <li>پشتیبانی از async</li>
             <li>دریافت Command</li>
+            <li>دریافت پیام</li>
             <li>دریافت Text مشخص</li>
+
+            <li>دریافت عکس</li>
+            <li>دریافت Document</li>
+            <li>دریافت Video</li>
+            <li>دریافت Audio</li>
+            <li>دریافت Voice</li>
+            <li>دریافت Media</li>
+            <li>دریافت Location</li>
+            <li>دریافت Sticker</li>
+            <li>دریافت Contact</li>
+
             <li>پاسخ مستقیم به پیام</li>
+
             <li>ارسال پیام</li>
             <li>ارسال عکس</li>
             <li>ارسال ویدیو</li>
@@ -280,30 +310,48 @@
             <li>ارسال Document</li>
             <li>ارسال Voice</li>
             <li>ارسال Location</li>
+
             <li>ویرایش پیام</li>
             <li>حذف پیام</li>
+
             <li>دریافت اطلاعات Bot</li>
             <li>دریافت اطلاعات Chat</li>
             <li>دریافت اطلاعات عضو Chat</li>
             <li>دریافت Updates</li>
-            <li>اجرای Bot با Polling</li>
+
+            <li>Polling</li>
             <li>مدیریت خطاها</li>
-            <li>پشتیبانی از async</li>
         </ul>
     </section>
+
+
+    <!-- INSTALL -->
 
     <section id="install">
         <h2>نصب</h2>
 
-        <p>برای نصب HidMart از pip استفاده کنید:</p>
+        <p>
+            نصب آخرین نسخه HidMart از PyPI:
+        </p>
 
         <pre><code>pip install hidmart</code></pre>
+
+        <p>
+            نصب نسخه مشخص:
+        </p>
+
+        <pre><code>pip install hidmart==0.3.0</code></pre>
+
+        <p>
+            HidMart 0.3.0 به Python 3.9 یا بالاتر نیاز دارد.
+        </p>
     </section>
+
+
+    <!-- QUICK START -->
 
     <section id="quickstart">
         <h2>شروع سریع</h2>
-
-        <p>یک Bot ساده با دستور start:</p>
 
         <pre><code><span class="code-keyword">from</span> hidmart <span class="code-keyword">import</span> Bot
 
@@ -311,10 +359,15 @@ bot = Bot(<span class="code-string">"TOKEN"</span>)
 
 <span class="code-keyword">@bot.on_command</span>(<span class="code-string">"start"</span>)
 <span class="code-keyword">async def</span> <span class="code-function">start</span>(message):
-    <span class="code-keyword">await</span> message.reply(<span class="code-string">"سلام!"</span>)
+    <span class="code-keyword">await</span> message.reply(
+        <span class="code-string">"سلام 👋"</span>
+    )
 
 bot.run()</code></pre>
     </section>
+
+
+    <!-- BOT -->
 
     <section id="bot">
         <h2>Bot</h2>
@@ -330,16 +383,25 @@ bot.run()</code></pre>
     poll_interval=<span class="code-number">1.0</span>,
     timeout=<span class="code-number">25</span>
 )</code></pre>
+
+        <h3>اجرای Bot</h3>
+
+        <pre><code>bot.run()</code></pre>
     </section>
 
-    <section id="handlers">
-        <h2>Handler</h2>
 
-        <h3>دریافت Command</h3>
+    <!-- HANDLERS -->
+
+    <section id="handlers">
+        <h2>Handlerها</h2>
+
+        <h3>Command</h3>
 
         <pre><code><span class="code-keyword">@bot.on_command</span>(<span class="code-string">"start"</span>)
 <span class="code-keyword">async def</span> <span class="code-function">start</span>(message):
-    <span class="code-keyword">await</span> message.reply(<span class="code-string">"سلام!"</span>)</code></pre>
+    <span class="code-keyword">await</span> message.reply(
+        <span class="code-string">"سلام!"</span>
+    )</code></pre>
 
         <h3>چند Command</h3>
 
@@ -348,51 +410,170 @@ bot.run()</code></pre>
     <span class="code-string">"help"</span>
 )
 <span class="code-keyword">async def</span> <span class="code-function">commands</span>(message):
-    <span class="code-keyword">await</span> message.reply(<span class="code-string">"دستور دریافت شد"</span>)</code></pre>
+    <span class="code-keyword">await</span> message.reply(
+        <span class="code-string">"دستور دریافت شد"</span>
+    )</code></pre>
 
-        <h3>دریافت پیام</h3>
+        <h3>پیام</h3>
 
         <pre><code><span class="code-keyword">@bot.on_message</span>()
-<span class="code-keyword">async def</span> <span class="code-function">message_handler</span>(message):
+<span class="code-keyword">async def</span> <span class="code-function">handler</span>(message):
     print(message.text)</code></pre>
 
-        <h3>دریافت Text مشخص</h3>
+        <h3>Text مشخص</h3>
 
         <pre><code><span class="code-keyword">@bot.on_text</span>(<span class="code-string">"سلام"</span>)
 <span class="code-keyword">async def</span> <span class="code-function">hello</span>(message):
-    <span class="code-keyword">await</span> message.reply(<span class="code-string">"سلام!"</span>)</code></pre>
+    <span class="code-keyword">await</span> message.reply(
+        <span class="code-string">"سلام!"</span>
+    )</code></pre>
+
+        <h3>Media Handlerها</h3>
+
+        <pre><code><span class="code-keyword">@bot.on_photo</span>()
+<span class="code-keyword">async def</span> <span class="code-function">photo</span>(message):
+    print(message.photo)
+
+<span class="code-keyword">@bot.on_document</span>()
+<span class="code-keyword">async def</span> <span class="code-function">document</span>(message):
+    print(message.document)
+
+<span class="code-keyword">@bot.on_video</span>()
+<span class="code-keyword">async def</span> <span class="code-function">video</span>(message):
+    print(message.video)
+
+<span class="code-keyword">@bot.on_audio</span>()
+<span class="code-keyword">async def</span> <span class="code-function">audio</span>(message):
+    print(message.audio)
+
+<span class="code-keyword">@bot.on_voice</span>()
+<span class="code-keyword">async def</span> <span class="code-function">voice</span>(message):
+    print(message.voice)
+
+<span class="code-keyword">@bot.on_media</span>()
+<span class="code-keyword">async def</span> <span class="code-function">media</span>(message):
+    print(message.raw)</code></pre>
     </section>
+
+
+    <!-- MESSAGE -->
 
     <section id="message">
         <h2>Message</h2>
 
         <h3>اطلاعات پیام</h3>
 
-        <pre><code>message.message_id
-message.id
+        <pre><code>message.id
+message.message_id
 message.text
 message.chat
 message.from_user
 message.sender
 message.raw</code></pre>
 
-        <h3>پاسخ به پیام</h3>
+        <h3>اطلاعات Media</h3>
 
-        <pre><code><span class="code-keyword">await</span> message.reply(<span class="code-string">"سلام!"</span>)</code></pre>
+        <pre><code>message.photo
+message.document
+message.video
+message.audio
+message.voice</code></pre>
 
-        <h3>پاسخ با answer</h3>
+        <div class="warning">
+            برای عکس و فایل، شناسه فایل از خود آبجکت Media گرفته می‌شود.
+            برای مثال:
+        </div>
 
-        <pre><code><span class="code-keyword">await</span> message.answer(<span class="code-string">"سلام!"</span>)</code></pre>
+        <pre><code>photo_id = message.photo[-1]["file_id"]
+
+document_id = message.document["file_id"]</code></pre>
+
+        <h3>پاسخ</h3>
+
+        <pre><code><span class="code-keyword">await</span> message.reply(
+    <span class="code-string">"سلام!"</span>
+)</code></pre>
+
+        <h3>Answer</h3>
+
+        <pre><code><span class="code-keyword">await</span> message.answer(
+    <span class="code-string">"سلام!"</span>
+)</code></pre>
 
         <h3>حذف پیام</h3>
 
         <pre><code><span class="code-keyword">await</span> message.delete()</code></pre>
     </section>
 
+
+    <!-- MEDIA -->
+
+    <section id="media">
+        <h2>Media</h2>
+
+        <h3>دریافت عکس</h3>
+
+        <pre><code><span class="code-keyword">@bot.on_photo</span>()
+<span class="code-keyword">async def</span> <span class="code-function">photo_handler</span>(message):
+
+    photo = message.photo[-1]
+
+    file_id = photo[<span class="code-string">"file_id"</span>]
+
+    print(file_id)</code></pre>
+
+        <h3>دریافت فایل</h3>
+
+        <pre><code><span class="code-keyword">@bot.on_document</span>()
+<span class="code-keyword">async def</span> <span class="code-function">document_handler</span>(message):
+
+    file_id = message.document[
+        <span class="code-string">"file_id"</span>
+    ]
+
+    print(file_id)</code></pre>
+
+        <h3>ارسال دوباره عکس</h3>
+
+        <pre><code><span class="code-keyword">@bot.on_photo</span>()
+<span class="code-keyword">async def</span> <span class="code-function">photo_handler</span>(message):
+
+    photo = message.photo[-1]
+
+    file_id = photo[<span class="code-string">"file_id"</span>]
+
+    <span class="code-keyword">await</span> bot.send_photo(
+        message.chat.id,
+        file_id,
+        caption=<span class="code-string">"📷 عکس دوباره ارسال شد!"</span>
+    )</code></pre>
+
+        <h3>ارسال دوباره فایل</h3>
+
+        <pre><code><span class="code-keyword">@bot.on_document</span>()
+<span class="code-keyword">async def</span> <span class="code-function">document_handler</span>(message):
+
+    file_id = message.document[
+        <span class="code-string">"file_id"</span>
+    ]
+
+    <span class="code-keyword">await</span> bot.send_document(
+        message.chat.id,
+        file_id,
+        caption=<span class="code-string">"📄 فایل دوباره ارسال شد!"</span>
+    )</code></pre>
+    </section>
+
+
+    <!-- USER -->
+
     <section id="user">
         <h2>User</h2>
 
-        <p>اطلاعات کاربر از طریق from_user قابل دسترسی است.</p>
+        <p>
+            اطلاعات کاربر از طریق <code>message.from_user</code>
+            در دسترس است.
+        </p>
 
         <pre><code>user = message.from_user
 
@@ -403,10 +584,11 @@ user.username
 user.full_name</code></pre>
     </section>
 
+
+    <!-- CHAT -->
+
     <section id="chat">
         <h2>Chat</h2>
-
-        <p>اطلاعات گفتگو از طریق message.chat قابل دسترسی است.</p>
 
         <pre><code>chat = message.chat
 
@@ -415,28 +597,31 @@ chat.type
 chat.title
 chat.username</code></pre>
 
-        <h3>بررسی Private</h3>
+        <h3>Private</h3>
 
         <pre><code><span class="code-keyword">if</span> message.chat.is_private:
     print(<span class="code-string">"Private"</span>)</code></pre>
 
-        <h3>بررسی Group</h3>
+        <h3>Group</h3>
 
         <pre><code><span class="code-keyword">if</span> message.chat.is_group:
     print(<span class="code-string">"Group"</span>)</code></pre>
     </section>
 
+
+    <!-- SENDING -->
+
     <section id="sending">
         <h2>متدهای ارسال</h2>
 
-        <h3>ارسال پیام</h3>
+        <h3>پیام</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_message(
     chat_id,
     <span class="code-string">"سلام!"</span>
 )</code></pre>
 
-        <h3>ارسال عکس</h3>
+        <h3>عکس</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_photo(
     chat_id,
@@ -444,7 +629,7 @@ chat.username</code></pre>
     caption=<span class="code-string">"عکس"</span>
 )</code></pre>
 
-        <h3>ارسال ویدیو</h3>
+        <h3>ویدیو</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_video(
     chat_id,
@@ -452,7 +637,7 @@ chat.username</code></pre>
     caption=<span class="code-string">"ویدیو"</span>
 )</code></pre>
 
-        <h3>ارسال Audio</h3>
+        <h3>Audio</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_audio(
     chat_id,
@@ -460,7 +645,7 @@ chat.username</code></pre>
     caption=<span class="code-string">"Audio"</span>
 )</code></pre>
 
-        <h3>ارسال Document</h3>
+        <h3>Document</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_document(
     chat_id,
@@ -468,7 +653,7 @@ chat.username</code></pre>
     caption=<span class="code-string">"File"</span>
 )</code></pre>
 
-        <h3>ارسال Voice</h3>
+        <h3>Voice</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_voice(
     chat_id,
@@ -476,7 +661,7 @@ chat.username</code></pre>
     caption=<span class="code-string">"Voice"</span>
 )</code></pre>
 
-        <h3>ارسال Location</h3>
+        <h3>Location</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.send_location(
     chat_id,
@@ -485,10 +670,13 @@ chat.username</code></pre>
 )</code></pre>
     </section>
 
+
+    <!-- MESSAGE MANAGEMENT -->
+
     <section>
         <h2>مدیریت پیام</h2>
 
-        <h3>ویرایش پیام</h3>
+        <h3>ویرایش</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.edit_message_text(
     chat_id,
@@ -496,7 +684,7 @@ chat.username</code></pre>
     <span class="code-string">"متن جدید"</span>
 )</code></pre>
 
-        <h3>حذف پیام</h3>
+        <h3>حذف</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.delete_message(
     chat_id,
@@ -504,26 +692,32 @@ chat.username</code></pre>
 )</code></pre>
     </section>
 
+
+    <!-- INFO -->
+
     <section>
         <h2>اطلاعات Bot و Chat</h2>
 
-        <h3>اطلاعات Bot</h3>
+        <h3>Bot</h3>
 
         <pre><code>me = <span class="code-keyword">await</span> bot.get_me()</code></pre>
 
-        <h3>اطلاعات Chat</h3>
+        <h3>Chat</h3>
 
         <pre><code>chat = <span class="code-keyword">await</span> bot.get_chat(
     chat_id
 )</code></pre>
 
-        <h3>اطلاعات عضو</h3>
+        <h3>عضو Chat</h3>
 
         <pre><code>member = <span class="code-keyword">await</span> bot.get_chat_member(
     chat_id,
     user_id
 )</code></pre>
     </section>
+
+
+    <!-- UPDATES -->
 
     <section id="updates">
         <h2>Updates</h2>
@@ -532,7 +726,7 @@ chat.username</code></pre>
 
         <pre><code>updates = <span class="code-keyword">await</span> bot.get_updates()</code></pre>
 
-        <h3>تنظیمات Updates</h3>
+        <h3>تنظیمات</h3>
 
         <pre><code>updates = <span class="code-keyword">await</span> bot.get_updates(
     offset=<span class="code-number">10</span>,
@@ -541,18 +735,21 @@ chat.username</code></pre>
 )</code></pre>
     </section>
 
+
+    <!-- RUN -->
+
     <section>
         <h2>اجرای Bot</h2>
 
-        <h3>اجرای معمولی</h3>
+        <h3>Run</h3>
 
         <pre><code>bot.run()</code></pre>
 
-        <h3>اجرای Async</h3>
+        <h3>Start</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.start()</code></pre>
 
-        <h3>توقف Bot</h3>
+        <h3>Stop</h3>
 
         <pre><code><span class="code-keyword">await</span> bot.stop()</code></pre>
 
@@ -561,10 +758,11 @@ chat.username</code></pre>
         <pre><code>bot.polling()</code></pre>
     </section>
 
+
+    <!-- ERRORS -->
+
     <section id="errors">
         <h2>مدیریت خطاها</h2>
-
-        <p>خطاهای اصلی HidMart:</p>
 
         <ul>
             <li>HidMartError</li>
@@ -573,7 +771,7 @@ chat.username</code></pre>
             <li>InvalidTokenError</li>
         </ul>
 
-        <h3>استفاده</h3>
+        <h3>Import</h3>
 
         <pre><code><span class="code-keyword">from</span> hidmart <span class="code-keyword">import</span> (
     HidMartError,
@@ -591,88 +789,109 @@ chat.username</code></pre>
     )
 
 <span class="code-keyword">except</span> InvalidTokenError:
-    print(<span class="code-string">"Invalid Token"</span>)</code></pre>
+    print(
+        <span class="code-string">"Invalid Token"</span>
+    )</code></pre>
     </section>
+
+
+    <!-- CLASSES -->
 
     <section>
         <h2>کلاس‌ها</h2>
 
-        <div>
-            <span class="method">Bot</span>
-            <span class="method">Message</span>
-            <span class="method">User</span>
-            <span class="method">Chat</span>
-            <span class="method">Handler</span>
-            <span class="method">CommandHandler</span>
-            <span class="method">MessageHandler</span>
-            <span class="method">TextHandler</span>
-        </div>
+        <span class="method">Bot</span>
+        <span class="method">Message</span>
+        <span class="method">User</span>
+        <span class="method">Chat</span>
+        <span class="method">Handler</span>
+        <span class="method">CommandHandler</span>
+        <span class="method">MessageHandler</span>
+        <span class="method">TextHandler</span>
     </section>
+
+
+    <!-- HANDLER LIST -->
 
     <section>
-        <h2>Handlerهای Bot</h2>
+        <h2>Handlerهای موجود</h2>
 
-        <div>
-            <span class="method">on_command()</span>
-            <span class="method">on_message()</span>
-            <span class="method">on_text()</span>
-        </div>
+        <span class="method">on_command()</span>
+        <span class="method">on_message()</span>
+        <span class="method">on_text()</span>
+        <span class="method">on_photo()</span>
+        <span class="method">on_document()</span>
+        <span class="method">on_video()</span>
+        <span class="method">on_audio()</span>
+        <span class="method">on_voice()</span>
+        <span class="method">on_media()</span>
+        <span class="method">on_sticker()</span>
+        <span class="method">on_location()</span>
+        <span class="method">on_contact()</span>
     </section>
+
+
+    <!-- SEND METHODS -->
 
     <section>
         <h2>متدهای ارسال</h2>
 
-        <div>
-            <span class="method">send_message()</span>
-            <span class="method">send_photo()</span>
-            <span class="method">send_video()</span>
-            <span class="method">send_audio()</span>
-            <span class="method">send_document()</span>
-            <span class="method">send_voice()</span>
-            <span class="method">send_location()</span>
-        </div>
+        <span class="method">send_message()</span>
+        <span class="method">send_photo()</span>
+        <span class="method">send_video()</span>
+        <span class="method">send_audio()</span>
+        <span class="method">send_document()</span>
+        <span class="method">send_voice()</span>
+        <span class="method">send_location()</span>
     </section>
+
+
+    <!-- MESSAGE METHODS -->
 
     <section>
         <h2>متدهای Message</h2>
 
-        <div>
-            <span class="method">reply()</span>
-            <span class="method">answer()</span>
-            <span class="method">delete()</span>
-        </div>
+        <span class="method">reply()</span>
+        <span class="method">answer()</span>
+        <span class="method">delete()</span>
     </section>
+
+
+    <!-- MANAGEMENT -->
 
     <section>
         <h2>متدهای مدیریت پیام</h2>
 
-        <div>
-            <span class="method">edit_message_text()</span>
-            <span class="method">delete_message()</span>
-        </div>
+        <span class="method">edit_message_text()</span>
+        <span class="method">delete_message()</span>
     </section>
+
+
+    <!-- INFO METHODS -->
 
     <section>
         <h2>متدهای اطلاعات</h2>
 
-        <div>
-            <span class="method">get_me()</span>
-            <span class="method">get_chat()</span>
-            <span class="method">get_chat_member()</span>
-            <span class="method">get_updates()</span>
-        </div>
+        <span class="method">get_me()</span>
+        <span class="method">get_chat()</span>
+        <span class="method">get_chat_member()</span>
+        <span class="method">get_updates()</span>
     </section>
+
+
+    <!-- EXECUTION -->
 
     <section>
         <h2>متدهای اجرای Bot</h2>
 
-        <div>
-            <span class="method">start()</span>
-            <span class="method">stop()</span>
-            <span class="method">polling()</span>
-            <span class="method">run()</span>
-        </div>
+        <span class="method">start()</span>
+        <span class="method">stop()</span>
+        <span class="method">polling()</span>
+        <span class="method">run()</span>
     </section>
+
+
+    <!-- SUPPORT -->
 
     <section id="support">
         <h2>پشتیبانی</h2>
@@ -689,10 +908,15 @@ chat.username</code></pre>
         </div>
     </section>
 
+
+    <!-- VERSION -->
+
     <section>
         <h2>نسخه</h2>
 
-        <p>HidMart 0.2.0</p>
+        <p>
+            HidMart 0.3.0
+        </p>
 
         <p>
             HidMart یک پروژه در حال توسعه است.
