@@ -143,9 +143,15 @@ class BaleClient:
             f"Request failed: {last_error}"
         )
 
+    # ==================================
+    # INFORMATION
+    # ==================================
+
     async def get_me(self):
 
-        return await self.call("getMe")
+        return await self.call(
+            "getMe"
+        )
 
     async def get_updates(
         self,
@@ -169,6 +175,36 @@ class BaleClient:
             data,
         )
 
+    async def get_chat(
+        self,
+        chat_id,
+    ):
+
+        return await self.call(
+            "getChat",
+            {
+                "chat_id": chat_id,
+            },
+        )
+
+    async def get_chat_member(
+        self,
+        chat_id,
+        user_id,
+    ):
+
+        return await self.call(
+            "getChatMember",
+            {
+                "chat_id": chat_id,
+                "user_id": user_id,
+            },
+        )
+
+    # ==================================
+    # SEND MESSAGE
+    # ==================================
+
     async def send_message(
         self,
         chat_id,
@@ -187,6 +223,10 @@ class BaleClient:
             "sendMessage",
             data,
         )
+
+    # ==================================
+    # MEDIA
+    # ==================================
 
     async def send_photo(
         self,
@@ -324,6 +364,10 @@ class BaleClient:
             data,
         )
 
+    # ==================================
+    # MESSAGE MANAGEMENT
+    # ==================================
+
     async def edit_message_text(
         self,
         chat_id,
@@ -356,29 +400,6 @@ class BaleClient:
             {
                 "chat_id": chat_id,
                 "message_id": message_id,
-            },
-        )
-
-    async def get_chat(self, chat_id):
-
-        return await self.call(
-            "getChat",
-            {
-                "chat_id": chat_id,
-            },
-        )
-
-    async def get_chat_member(
-        self,
-        chat_id,
-        user_id,
-    ):
-
-        return await self.call(
-            "getChatMember",
-            {
-                "chat_id": chat_id,
-                "user_id": user_id,
             },
         )
 
