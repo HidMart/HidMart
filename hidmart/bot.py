@@ -3,12 +3,21 @@ import logging
 
 from .client import BaleClient
 from .types import Message
+
 from .handlers import (
     CommandHandler,
     MessageHandler,
     TextHandler,
+    PhotoHandler,
+    VideoHandler,
+    AudioHandler,
+    DocumentHandler,
+    VoiceHandler,
+    StickerHandler,
+    LocationHandler,
+    ContactHandler,
+    MediaAnyHandler,
 )
-
 
 logger = logging.getLogger("hidmart")
 
@@ -28,25 +37,20 @@ class Bot:
             )
 
         self.token = token
-
         self.poll_interval = poll_interval
         self.timeout = timeout
 
-        self.client = BaleClient(
-            token
-        )
+        self.client = BaleClient(token)
 
         self.handlers = []
 
         self.running = False
-
         self.offset = None
-
         self.me = None
 
-    # -------------------------
-    # Handlers
-    # -------------------------
+    # ==================================================
+    # HANDLERS
+    # ==================================================
 
     def on_command(self, *commands):
 
@@ -75,9 +79,7 @@ class Bot:
         def decorator(callback):
 
             self.handlers.append(
-                MessageHandler(
-                    callback
-                )
+                MessageHandler(callback)
             )
 
             return callback
@@ -99,9 +101,121 @@ class Bot:
 
         return decorator
 
-    # -------------------------
-    # API methods
-    # -------------------------
+    # ==================================================
+    # MEDIA HANDLERS
+    # ==================================================
+
+    def on_photo(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                PhotoHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_video(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                VideoHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_audio(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                AudioHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_document(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                DocumentHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_voice(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                VoiceHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_sticker(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                StickerHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_location(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                LocationHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_contact(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                ContactHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    def on_media(self):
+
+        def decorator(callback):
+
+            self.handlers.append(
+                MediaAnyHandler(callback)
+            )
+
+            return callback
+
+        return decorator
+
+    # ==================================================
+    # SEND MESSAGE
+    # ==================================================
 
     async def send_message(
         self,
@@ -206,6 +320,10 @@ class Bot:
             **kwargs,
         )
 
+    # ==================================================
+    # MESSAGE MANAGEMENT
+    # ==================================================
+
     async def edit_message_text(
         self,
         chat_id,
@@ -231,6 +349,10 @@ class Bot:
             chat_id,
             message_id,
         )
+
+    # ==================================================
+    # INFORMATION
+    # ==================================================
 
     async def get_me(self):
 
@@ -271,21 +393,16 @@ class Bot:
             limit=limit,
         )
 
-    # -------------------------
-    # Update processing
-    # -------------------------
+    # ==================================================
+    # UPDATE PROCESSING
+    # ==================================================
 
-    async def process_update(
-        self,
-        update,
-    ):
+    async def process_update(self, update):
 
         if not isinstance(update, dict):
             return
 
-        message_data = update.get(
-            "message"
-        )
+        message_data = update.get("message")
 
         if not message_data:
             return
@@ -299,19 +416,12 @@ class Bot:
 
             try:
 
-                if hasattr(
-                    handler,
-                    "matches",
-                ):
+                if hasattr(handler, "matches"):
 
-                    if not handler.matches(
-                        message
-                    ):
+                    if not handler.matches(message):
                         continue
 
-                await handler.run(
-                    message
-                )
+                await handler.run(message)
 
             except Exception:
 
@@ -319,16 +429,19 @@ class Bot:
                     "Handler error"
                 )
 
-    # -------------------------
-    # Polling
-    # -------------------------
+    # ==================================================
+    # START
+    # ==================================================
 
-    async def polling(self):
+    async def start(self):
+
+        if self.running:
+            return
 
         self.running = True
 
         logger.info(
-            "HidMart polling started"
+            "HidMart bot started"
         )
 
         while self.running:
@@ -336,36 +449,28 @@ class Bot:
             try:
 
                 updates = await self.get_updates(
-                    offset=self.offset
+                    offset=self.offset,
+                    timeout=self.timeout,
                 )
 
-                if not updates:
+                if updates:
 
-                    await asyncio.sleep(
-                        self.poll_interval
-                    )
+                    for update in updates:
 
-                    continue
+                        if isinstance(update, dict):
 
-                for update in updates:
+                            update_id = update.get(
+                                "update_id"
+                            )
 
-                    update_id = update.get(
-                        "update_id"
-                    )
+                            if update_id is not None:
+                                self.offset = (
+                                    update_id + 1
+                                )
 
-                    if update_id is not None:
-
-                        self.offset = (
-                            update_id + 1
+                        await self.process_update(
+                            update
                         )
-
-                    await self.process_update(
-                        update
-                    )
-
-            except asyncio.CancelledError:
-
-                break
 
             except Exception:
 
@@ -374,52 +479,43 @@ class Bot:
                 )
 
                 await asyncio.sleep(
-                    3
+                    self.poll_interval
                 )
 
-        logger.info(
-            "HidMart polling stopped"
-        )
-
-    async def start(self):
-
-        self.running = True
-
-        self.me = await self.get_me()
-
-        logger.info(
-            "Bot started: %s",
-            self.me,
-        )
-
-        await self.polling()
+    # ==================================================
+    # STOP
+    # ==================================================
 
     async def stop(self):
 
         self.running = False
 
-        await self.client.close()
+        logger.info(
+            "HidMart bot stopped"
+        )
 
-    async def _run(self):
+    # ==================================================
+    # POLLING
+    # ==================================================
 
-        try:
-
-            await self.start()
-
-        finally:
-
-            await self.client.close()
-
-    def run(self):
+    def polling(self):
 
         try:
 
             asyncio.run(
-                self._run()
+                self.start()
             )
 
         except KeyboardInterrupt:
 
             logger.info(
-                "HidMart stopped by user"
+                "Bot stopped by user"
             )
+
+    # ==================================================
+    # RUN
+    # ==================================================
+
+    def run(self):
+
+        self.polling()
