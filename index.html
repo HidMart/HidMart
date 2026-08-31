@@ -12,12 +12,12 @@
         margin: 0;
         font-family: Arial, Tahoma, sans-serif;
         background: #ffffff;
-        color: #222;
+        color: #000000;
         line-height: 1.8;
     }
 
     header {
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #eeeeee;
         padding: 30px 20px;
     }
 
@@ -30,10 +30,11 @@
     h1 {
         margin: 0;
         font-size: 32px;
+        color: #000000;
     }
 
     .version {
-        color: #777;
+        color: #000000;
     }
 
     nav {
@@ -41,12 +42,12 @@
         max-width: 1000px;
         padding: 15px 20px;
         background: #fafafa;
-        border: 1px solid #eee;
+        border: 1px solid #eeeeee;
         border-radius: 8px;
     }
 
     nav a {
-        color: #333;
+        color: #000000;
         text-decoration: none;
         margin-left: 15px;
     }
@@ -60,50 +61,114 @@
     }
 
     h2 {
-        border-bottom: 1px solid #eee;
+        color: #000000;
+        border-bottom: 1px solid #eeeeee;
         padding-bottom: 8px;
     }
 
     h3 {
+        color: #000000;
         margin-top: 25px;
+    }
+
+    p, li {
+        color: #000000;
     }
 
     pre {
         direction: ltr;
         text-align: left;
         background: #f7f7f7;
-        border: 1px solid #eee;
+        border: 1px solid #eeeeee;
         border-radius: 7px;
         padding: 15px;
         overflow-x: auto;
+        font-family: Consolas, monospace;
+        font-size: 14px;
+    }
+
+    code {
+        font-family: Consolas, monospace;
+    }
+
+    /* Python Syntax Highlighting */
+
+    .keyword {
+        color: #7a3e9d;
+        font-weight: bold;
+    }
+
+    .function {
+        color: #0066cc;
+    }
+
+    .string {
+        color: #008000;
+    }
+
+    .comment {
+        color: #777777;
+    }
+
+    .number {
+        color: #b45f06;
+    }
+
+    .decorator {
+        color: #cc5500;
+    }
+
+    .class-name {
+        color: #005f73;
+        font-weight: bold;
     }
 
     .notice {
         background: #fafafa;
-        border: 1px solid #eee;
+        border: 1px solid #eeeeee;
         border-radius: 8px;
         padding: 18px;
         margin: 25px 0;
+        color: #000000;
+    }
+
+    .support {
+        background: #ffffff;
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 25px;
+    }
+
+    .support a {
+        color: #000000;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .support a:hover {
+        text-decoration: underline;
     }
 
     footer {
-        border-top: 1px solid #eee;
+        border-top: 1px solid #eeeeee;
         padding: 25px;
         text-align: center;
-        color: #777;
+        color: #000000;
     }
 </style>
 
 </head><body><header>
     <div class="container">
-        <h1>HidMart</h1>
-        <div class="version">
-            کتابخانه Python برای ساخت ربات در بله
-        </div>
-        <div class="version">
-            Version: 0.2.0
-        </div>
+        <h1>HidMart</h1>    <div class="version">
+        کتابخانه Python برای ساخت ربات در بله
     </div>
+
+    <div class="version">
+        Version: 0.2.0
+    </div>
+</div>
+
 </header><nav>
     <a href="#features">قابلیت‌ها</a>
     <a href="#install">نصب</a>
@@ -112,10 +177,11 @@
     <a href="#handler">Handler</a>
     <a href="#message">Message</a>
     <a href="#errors">خطاها</a>
+    <a href="#support">پشتیبانی</a>
 </nav><main class="container"><div class="notice">
-    <strong>دوست داری سایت داکیومنت هم داشته باشی؟</strong>
+    <strong>مستندات HidMart</strong>
     <br>
-    برای HidMart می‌تونی یک سایت مستندات ساده و کامل داشته باشی.
+    راهنمای استفاده از کتابخانه HidMart برای ساخت ربات در بله.
 </div>
 
 <section id="features">
@@ -140,6 +206,7 @@
         <li>دریافت اطلاعات Chat</li>
         <li>دریافت Updates</li>
         <li>اجرای ربات با Polling</li>
+        <li>مدیریت خطاها</li>
         <li>پشتیبانی از async</li>
     </ul>
 </section>
@@ -147,21 +214,21 @@
 <section id="install">
     <h2>نصب</h2>
 
-    <pre><code>pip install hidmart</code></pre>
+    <pre><code><span class="function">pip</span> <span class="keyword">install</span> <span class="string">hidmart</span></code></pre>
 </section>
 
 <section id="quickstart">
     <h2>شروع سریع</h2>
 
-    <pre><code>from hidmart import Bot
+    <pre><code><span class="keyword">from</span> hidmart <span class="keyword">import</span> Bot
 
-bot = Bot("TOKEN")
+bot = <span class="class-name">Bot</span>(<span class="string">"TOKEN"</span>)
 
-@bot.on_command("start")
-async def start(message):
-await message.reply("سلام 👋")
+<span class="decorator">@bot.on_command</span>(<span class="string">"start"</span>)
+<span class="keyword">async def</span> <span class="function">start</span>(message):
+<span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام 👋"</span>)
 
-bot.run()</code></pre>
+bot.<span class="function">run</span>()</code></pre>
 </section>
 
 <section id="bot">
@@ -169,14 +236,14 @@ bot.run()</code></pre>
 
     <h3>ساخت Bot</h3>
 
-    <pre><code>bot = Bot("TOKEN")</code></pre>
+    <pre><code>bot = <span class="class-name">Bot</span>(<span class="string">"TOKEN"</span>)</code></pre>
 
     <h3>تنظیمات</h3>
 
-    <pre><code>bot = Bot(
-"TOKEN",
-poll_interval=1.0,
-timeout=25
+    <pre><code>bot = <span class="class-name">Bot</span>(
+<span class="string">"TOKEN"</span>,
+poll_interval=<span class="number">1.0</span>,
+timeout=<span class="number">25</span>
 
 )</code></pre>
 </section>
@@ -186,24 +253,24 @@ timeout=25
 
     <h3>دریافت Command</h3>
 
-    <pre><code>@bot.on_command("start")
+    <pre><code><span class="decorator">@bot.on_command</span>(<span class="string">"start"</span>)
 
-async def start(message):
-await message.reply("سلام!")</code></pre>
+<span class="keyword">async def</span> <span class="function">start</span>(message):
+<span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام!"</span>)</code></pre>
 
     <h3>دریافت پیام</h3>
 
-    <pre><code>@bot.on_message()
+    <pre><code><span class="decorator">@bot.on_message</span>()
 
-async def message_handler(message):
-print(message.text)</code></pre>
+<span class="keyword">async def</span> <span class="function">message_handler</span>(message):
+<span class="function">print</span>(message.text)</code></pre>
 
     <h3>دریافت Text مشخص</h3>
 
-    <pre><code>@bot.on_text("سلام")
+    <pre><code><span class="decorator">@bot.on_text</span>(<span class="string">"سلام"</span>)
 
-async def hello(message):
-await message.reply("سلام 👋")</code></pre>
+<span class="keyword">async def</span> <span class="function">hello</span>(message):
+<span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام 👋"</span>)</code></pre>
 </section>
 
 <section id="message">
@@ -222,32 +289,50 @@ message.raw</code></pre>
 
     <h3>پاسخ به پیام</h3>
 
-    <pre><code>await message.reply("سلام!")</code></pre>
+    <pre><code><span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام!"</span>)</code></pre>
 
     <h3>حذف پیام</h3>
 
-    <pre><code>await message.delete()</code></pre>
+    <pre><code><span class="keyword">await</span> message.<span class="function">delete</span>()</code></pre>
 </section>
 
 <section id="errors">
     <h2>مدیریت خطا</h2>
 
-    <pre><code>from hidmart import (
+    <pre><code><span class="keyword">from</span> hidmart <span class="keyword">import</span> (
 HidMartError,
 APIError,
 NetworkError,
-InvalidTokenError,
+InvalidTokenError
 
 )
 
-try:
-await bot.send_message(
+<span class="keyword">try</span>:
+<span class="keyword">await</span> bot.<span class="function">send_message</span>(
 chat_id,
-"Hello"
+<span class="string">"Hello"</span>
 )
 
-except InvalidTokenError:
-print("Invalid Token")</code></pre>
+<span class="keyword">except</span> InvalidTokenError:
+<span class="function">print</span>(<span class="string">"Invalid Token"</span>)</code></pre>
+</section>
+
+<section id="support">
+    <h2>ارتباط با پشتیبانی</h2>
+
+    <div class="support">
+        <p>
+            برای گزارش مشکل، پیشنهاد یا دریافت راهنمایی درباره HidMart
+            می‌توانید با پشتیبانی در بله در ارتباط باشید.
+        </p>
+
+        <p>
+            👤 آیدی پشتیبانی:
+            <a href="https://ble.ir/MARTO_developer" target="_blank">
+                @MARTO_developer
+            </a>
+        </p>
+    </div>
 </section>
 
 <section>
