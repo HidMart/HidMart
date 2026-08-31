@@ -19,6 +19,7 @@ from .handlers import (
     MediaAnyHandler,
 )
 
+
 logger = logging.getLogger("hidmart")
 
 
@@ -26,9 +27,9 @@ class Bot:
 
     def __init__(
         self,
-        token: str,
-        poll_interval: float = 1.0,
-        timeout: int = 25,
+        token,
+        poll_interval=1.0,
+        timeout=25,
     ):
 
         if not token:
@@ -48,9 +49,9 @@ class Bot:
         self.offset = None
         self.me = None
 
-    # ==================================================
+    # =====================================
     # HANDLERS
-    # ==================================================
+    # =====================================
 
     def on_command(self, *commands):
 
@@ -61,14 +62,12 @@ class Bot:
 
         def decorator(callback):
 
-            for command in commands:
-
-                self.handlers.append(
-                    CommandHandler(
-                        command,
-                        callback,
-                    )
+            self.handlers.append(
+                CommandHandler(
+                    commands,
+                    callback,
                 )
+            )
 
             return callback
 
@@ -100,10 +99,6 @@ class Bot:
             return callback
 
         return decorator
-
-    # ==================================================
-    # MEDIA HANDLERS
-    # ==================================================
 
     def on_photo(self):
 
@@ -213,9 +208,9 @@ class Bot:
 
         return decorator
 
-    # ==================================================
-    # SEND MESSAGE
-    # ==================================================
+    # =====================================
+    # SEND
+    # =====================================
 
     async def send_message(
         self,
@@ -320,9 +315,9 @@ class Bot:
             **kwargs,
         )
 
-    # ==================================================
+    # =====================================
     # MESSAGE MANAGEMENT
-    # ==================================================
+    # =====================================
 
     async def edit_message_text(
         self,
@@ -350,9 +345,9 @@ class Bot:
             message_id,
         )
 
-    # ==================================================
+    # =====================================
     # INFORMATION
-    # ==================================================
+    # =====================================
 
     async def get_me(self):
 
@@ -393,9 +388,9 @@ class Bot:
             limit=limit,
         )
 
-    # ==================================================
-    # UPDATE PROCESSING
-    # ==================================================
+    # =====================================
+    # UPDATE
+    # =====================================
 
     async def process_update(self, update):
 
@@ -429,19 +424,33 @@ class Bot:
                     "Handler error"
                 )
 
-    # ==================================================
+    # =====================================
     # START
-    # ==================================================
+    # =====================================
 
     async def start(self):
 
-        if self.running:
-            return
+        self.running = True
+
+        self.me = await self.get_me()
+
+        logger.info(
+            "Bot started: %s",
+            self.me,
+        )
+
+        await self.polling()
+
+    # =====================================
+    # POLLING
+    # =====================================
+
+    async def polling(self):
 
         self.running = True
 
         logger.info(
-            "HidMart bot started"
+            "HidMart polling started"
         )
 
         while self.running:
@@ -450,27 +459,34 @@ class Bot:
 
                 updates = await self.get_updates(
                     offset=self.offset,
-                    timeout=self.timeout,
                 )
 
-                if updates:
+                if not updates:
 
-                    for update in updates:
+                    await asyncio.sleep(
+                        self.poll_interval
+                    )
 
-                        if isinstance(update, dict):
+                    continue
 
-                            update_id = update.get(
-                                "update_id"
-                            )
+                for update in updates:
 
-                            if update_id is not None:
-                                self.offset = (
-                                    update_id + 1
-                                )
+                    update_id = update.get(
+                        "update_id"
+                    )
 
-                        await self.process_update(
-                            update
+                    if update_id is not None:
+
+                        self.offset = (
+                            update_id + 1
                         )
+
+                    await self.process_update(
+                        update
+                    )
+
+            except asyncio.CancelledError:
+                break
 
             except Exception:
 
@@ -478,44 +494,46 @@ class Bot:
                     "Polling error"
                 )
 
-                await asyncio.sleep(
-                    self.poll_interval
-                )
+                await asyncio.sleep(3)
 
-    # ==================================================
+        logger.info(
+            "HidMart polling stopped"
+        )
+
+    # =====================================
     # STOP
-    # ==================================================
+    # =====================================
 
     async def stop(self):
 
         self.running = False
 
-        logger.info(
-            "HidMart bot stopped"
-        )
+        await self.client.close()
 
-    # ==================================================
-    # POLLING
-    # ==================================================
+    # =====================================
+    # RUN
+    # =====================================
 
-    def polling(self):
+    async def _run(self):
+
+        try:
+
+            await self.start()
+
+        finally:
+
+            await self.client.close()
+
+    def run(self):
 
         try:
 
             asyncio.run(
-                self.start()
+                self._run()
             )
 
         except KeyboardInterrupt:
 
             logger.info(
-                "Bot stopped by user"
+                "HidMart stopped by user"
             )
-
-    # ==================================================
-    # RUN
-    # ==================================================
-
-    def run(self):
-
-        self.polling()
