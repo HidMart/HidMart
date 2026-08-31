@@ -49,16 +49,11 @@ class Bot:
         self.offset = None
         self.me = None
 
-    # =====================================
+    # ==================================
     # HANDLERS
-    # =====================================
+    # ==================================
 
     def on_command(self, *commands):
-
-        if not commands:
-            raise ValueError(
-                "At least one command is required"
-            )
 
         def decorator(callback):
 
@@ -208,9 +203,9 @@ class Bot:
 
         return decorator
 
-    # =====================================
+    # ==================================
     # SEND
-    # =====================================
+    # ==================================
 
     async def send_message(
         self,
@@ -315,82 +310,9 @@ class Bot:
             **kwargs,
         )
 
-    # =====================================
-    # MESSAGE MANAGEMENT
-    # =====================================
-
-    async def edit_message_text(
-        self,
-        chat_id,
-        message_id,
-        text,
-        **kwargs,
-    ):
-
-        return await self.client.edit_message_text(
-            chat_id,
-            message_id,
-            text,
-            **kwargs,
-        )
-
-    async def delete_message(
-        self,
-        chat_id,
-        message_id,
-    ):
-
-        return await self.client.delete_message(
-            chat_id,
-            message_id,
-        )
-
-    # =====================================
-    # INFORMATION
-    # =====================================
-
-    async def get_me(self):
-
-        self.me = await self.client.get_me()
-
-        return self.me
-
-    async def get_chat(self, chat_id):
-
-        return await self.client.get_chat(
-            chat_id
-        )
-
-    async def get_chat_member(
-        self,
-        chat_id,
-        user_id,
-    ):
-
-        return await self.client.get_chat_member(
-            chat_id,
-            user_id,
-        )
-
-    async def get_updates(
-        self,
-        offset=None,
-        timeout=None,
-        limit=None,
-    ):
-
-        if timeout is None:
-            timeout = self.timeout
-
-        return await self.client.get_updates(
-            offset=offset,
-            timeout=timeout,
-            limit=limit,
-        )
-
-    # =====================================
+    # ==================================
     # UPDATE
-    # =====================================
+    # ==================================
 
     async def process_update(self, update):
 
@@ -413,7 +335,9 @@ class Bot:
 
                 if hasattr(handler, "matches"):
 
-                    if not handler.matches(message):
+                    if not handler.matches(
+                        message
+                    ):
                         continue
 
                 await handler.run(message)
@@ -424,9 +348,48 @@ class Bot:
                     "Handler error"
                 )
 
-    # =====================================
-    # START
-    # =====================================
+    # ==================================
+    # INFO
+    # ==================================
+
+    async def get_me(self):
+        self.me = await self.client.get_me()
+        return self.me
+
+    async def get_chat(self, chat_id):
+        return await self.client.get_chat(
+            chat_id
+        )
+
+    async def get_chat_member(
+        self,
+        chat_id,
+        user_id,
+    ):
+        return await self.client.get_chat_member(
+            chat_id,
+            user_id,
+        )
+
+    async def get_updates(
+        self,
+        offset=None,
+        timeout=None,
+        limit=None,
+    ):
+
+        if timeout is None:
+            timeout = self.timeout
+
+        return await self.client.get_updates(
+            offset=offset,
+            timeout=timeout,
+            limit=limit,
+        )
+
+    # ==================================
+    # POLLING
+    # ==================================
 
     async def start(self):
 
@@ -441,24 +404,16 @@ class Bot:
 
         await self.polling()
 
-    # =====================================
-    # POLLING
-    # =====================================
-
     async def polling(self):
 
         self.running = True
-
-        logger.info(
-            "HidMart polling started"
-        )
 
         while self.running:
 
             try:
 
                 updates = await self.get_updates(
-                    offset=self.offset,
+                    offset=self.offset
                 )
 
                 if not updates:
@@ -488,21 +443,14 @@ class Bot:
             except asyncio.CancelledError:
                 break
 
-            except Exception:
+            except Exception as exc:
 
                 logger.exception(
-                    "Polling error"
+                    "Polling error: %s",
+                    exc,
                 )
 
                 await asyncio.sleep(3)
-
-        logger.info(
-            "HidMart polling stopped"
-        )
-
-    # =====================================
-    # STOP
-    # =====================================
 
     async def stop(self):
 
@@ -510,30 +458,18 @@ class Bot:
 
         await self.client.close()
 
-    # =====================================
-    # RUN
-    # =====================================
-
-    async def _run(self):
-
-        try:
-
-            await self.start()
-
-        finally:
-
-            await self.client.close()
-
     def run(self):
 
-        try:
+        async def runner():
 
-            asyncio.run(
-                self._run()
-            )
+            try:
+                await self.start()
+
+            finally:
+                await self.client.close()
+
+        try:
+            asyncio.run(runner())
 
         except KeyboardInterrupt:
-
-            logger.info(
-                "HidMart stopped by user"
-            )
+            pass
