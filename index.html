@@ -1,405 +1,854 @@
-<!DOCTYPE html><html lang="fa" dir="rtl">
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HidMart Documentation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HidMart Documentation</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    html {
-        scroll-behavior: smooth;
-    }
+html {
+    scroll-behavior: smooth;
+}
 
-    body {
-        margin: 0;
-        font-family: Arial, Tahoma, sans-serif;
-        background: #ffffff;
-        color: #000000;
-        line-height: 1.8;
-    }
+body {
+    margin: 0;
+    background: #050505;
+    color: #eeeeee;
+    font-family: Arial, Tahoma, sans-serif;
+    line-height: 1.8;
+}
 
-    header {
-        border-bottom: 1px solid #e5e5e5;
-        padding: 45px 20px;
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+header {
+    border-bottom: 1px solid #202020;
+    background: #080808;
+}
+
+.container {
+    max-width: 1050px;
+    margin: auto;
+    padding: 24px;
+}
+
+.header-box {
+    padding: 55px 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo svg {
+    width: 48px;
+    height: 48px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 42px;
+    letter-spacing: -1px;
+}
+
+.version {
+    color: #888;
+    margin-top: 4px;
+}
+
+nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(5,5,5,.95);
+    border-bottom: 1px solid #202020;
+    backdrop-filter: blur(10px);
+}
+
+.nav-inner {
+    max-width: 1050px;
+    margin: auto;
+    padding: 12px 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: #999;
+    padding: 7px 11px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: white;
+    background: #151515;
+}
+
+.notice {
+    margin: 30px 0;
+    padding: 22px;
+    border: 1px solid #292929;
+    border-radius: 10px;
+    background: #0c0c0c;
+}
+
+.notice-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 9px 15px;
+    border: 1px solid #333;
+    border-radius: 7px;
+    background: #151515;
+}
+
+.button:hover {
+    background: #202020;
+}
+
+section {
+    margin-bottom: 55px;
+}
+
+h2 {
+    font-size: 27px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #222;
+}
+
+h3 {
+    font-size: 19px;
+    margin-top: 28px;
+}
+
+ul {
+    padding-right: 24px;
+}
+
+li {
+    margin: 6px 0;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.feature {
+    padding: 17px;
+    border: 1px solid #222;
+    border-radius: 9px;
+    background: #0b0b0b;
+}
+
+.feature svg {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-left: 7px;
+}
+
+pre {
+    direction: ltr;
+    text-align: left;
+    overflow-x: auto;
+    background: #090909;
+    border: 1px solid #242424;
+    border-radius: 9px;
+    padding: 18px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+code {
+    font-family: Consolas, Monaco, monospace;
+}
+
+/* Python syntax */
+.kw {
+    color: #ff79c6;
+}
+
+.fn {
+    color: #50fa7b;
+}
+
+.str {
+    color: #f1fa8c;
+}
+
+.cls {
+    color: #8be9fd;
+}
+
+.num {
+    color: #bd93f9;
+}
+
+.comment {
+    color: #6272a4;
+}
+
+.method {
+    color: #8be9fd;
+}
+
+.info-box {
+    padding: 20px;
+    border: 1px solid #222;
+    background: #0b0b0b;
+    border-radius: 9px;
+}
+
+.support {
+    text-align: center;
+    padding: 35px 20px;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    background: #0b0b0b;
+}
+
+.support svg {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+}
+
+footer {
+    border-top: 1px solid #202020;
+    margin-top: 70px;
+    padding: 30px;
+    text-align: center;
+    color: #666;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 34px;
     }
 
     .container {
-        max-width: 1050px;
-        margin: auto;
-        padding: 20px;
+        padding: 18px;
     }
 
-    h1 {
-        margin: 0;
-        font-size: 36px;
-        color: #000000;
-    }
-
-    h2 {
-        font-size: 25px;
-        margin-top: 45px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #e5e5e5;
-    }
-
-    h3 {
-        font-size: 19px;
-        margin-top: 30px;
-    }
-
-    p,
-    li {
-        color: #000000;
-    }
-
-    .subtitle {
-        color: #000000;
-        font-size: 17px;
-    }
-
-    .version {
-        margin-top: 5px;
-        color: #000000;
-    }
-
-    nav {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: #ffffff;
-        border-bottom: 1px solid #e5e5e5;
-        padding: 12px 20px;
-    }
-
-    nav .nav-content {
-        max-width: 1050px;
-        margin: auto;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    nav a {
-        color: #000000;
-        text-decoration: none;
-        margin-left: 18px;
-    }
-
-    nav a:hover {
-        text-decoration: underline;
-    }
-
-    section {
-        margin-bottom: 50px;
-    }
-
-    ul {
-        padding-right: 25px;
-    }
-
-    li {
-        margin: 6px 0;
+    .header-box {
+        padding: 40px 18px;
     }
 
     pre {
-        direction: ltr;
-        text-align: left;
-        background: #f7f7f7;
-        border: 1px solid #e1e1e1;
-        border-radius: 8px;
-        padding: 18px;
-        overflow-x: auto;
-        font-family: Consolas, Monaco, monospace;
-        font-size: 14px;
-        line-height: 1.6;
+        font-size: 13px;
     }
-
-    code {
-        font-family: Consolas, Monaco, monospace;
-    }
-
-    .keyword {
-        color: #7a3e9d;
-        font-weight: bold;
-    }
-
-    .function {
-        color: #0066cc;
-    }
-
-    .string {
-        color: #008000;
-    }
-
-    .number {
-        color: #b45f06;
-    }
-
-    .decorator {
-        color: #cc5500;
-    }
-
-    .comment {
-        color: #777777;
-    }
-
-    .info {
-        border: 1px solid #dddddd;
-        background: #fafafa;
-        border-radius: 8px;
-        padding: 20px;
-        margin: 20px 0;
-    }
-
-    .method-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 10px;
-    }
-
-    .method {
-        border: 1px solid #e5e5e5;
-        border-radius: 7px;
-        padding: 12px;
-        background: #ffffff;
-    }
-
-    .method code {
-        color: #000000;
-    }
-
-    .support {
-        border: 1px solid #dddddd;
-        border-radius: 8px;
-        padding: 20px;
-    }
-
-    .support a {
-        color: #000000;
-        font-weight: bold;
-    }
-
-    footer {
-        border-top: 1px solid #e5e5e5;
-        margin-top: 60px;
-        padding: 30px;
-        text-align: center;
-        color: #000000;
-    }
-
-    @media (max-width: 600px) {
-        h1 {
-            font-size: 30px;
-        }
-
-        h2 {
-            font-size: 22px;
-        }
-
-        .container {
-            padding: 15px;
-        }
-
-        pre {
-            font-size: 13px;
-        }
-    }
+}
 </style>
+</head>
 
-</head><body><header>
-    <div class="container">
-        <h1>HidMart</h1>    <p class="subtitle">
-        کتابخانه Python برای ساخت ربات در پیام‌رسان بله
-    </p>
+<body>
 
-    <div class="version">
-        نسخه: <strong>0.2.0</strong>
+<header>
+    <div class="container header-box">
+
+        <div class="logo">
+
+            <svg viewBox="0 0 48 48" fill="none">
+                <rect x="3" y="3" width="42" height="42" rx="10"
+                      stroke="white" stroke-width="2"/>
+                <path d="M15 17L23 24L15 31"
+                      stroke="white"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <path d="M27 31H35"
+                      stroke="white"
+                      stroke-width="3"
+                      stroke-linecap="round"/>
+            </svg>
+
+            <div>
+                <h1>HidMart</h1>
+                <div class="version">
+                    Python Library for Bale Bots
+                </div>
+                <div class="version">
+                    Version 0.2.0
+                </div>
+            </div>
+
+        </div>
+
     </div>
-</div>
+</header>
 
-</header><nav>
-    <div class="nav-content">
+<nav>
+    <div class="nav-inner">
         <a href="#features">قابلیت‌ها</a>
         <a href="#install">نصب</a>
         <a href="#quickstart">شروع سریع</a>
         <a href="#bot">Bot</a>
-        <a href="#handlers">Handlerها</a>
+        <a href="#handlers">Handler</a>
         <a href="#message">Message</a>
         <a href="#user">User</a>
         <a href="#chat">Chat</a>
         <a href="#sending">ارسال</a>
         <a href="#updates">Updates</a>
         <a href="#errors">خطاها</a>
-        <a href="#classes">کلاس‌ها</a>
         <a href="#support">پشتیبانی</a>
     </div>
-</nav><main class="container"><section id="features"><h2>قابلیت‌ها</h2><ul>
-    <li>ساخت و مدیریت Bot</li>
-    <li>دریافت پیام‌ها</li>
-    <li>دریافت Command</li>
-    <li>دریافت Text مشخص</li>
-    <li>پاسخ به پیام</li>
-    <li>ارسال پیام</li>
-    <li>ارسال عکس</li>
-    <li>ارسال ویدیو</li>
-    <li>ارسال Audio</li>
-    <li>ارسال Document</li>
-    <li>ارسال Voice</li>
-    <li>ارسال Location</li>
-    <li>ویرایش پیام</li>
-    <li>حذف پیام</li>
-    <li>دریافت اطلاعات Bot</li>
-    <li>دریافت اطلاعات Chat</li>
-    <li>دریافت اطلاعات عضو Chat</li>
-    <li>دریافت Updates</li>
-    <li>اجرای Bot با Polling</li>
-    <li>اجرای Async</li>
-    <li>مدیریت خطاها</li>
-</ul></section><section id="install"><h2>نصب</h2><p>برای نصب آخرین نسخه HidMart از دستور زیر استفاده کنید:</p><pre><code>pip install hidmart</code></pre></section><section id="quickstart"><h2>شروع سریع</h2><pre><code><span class="keyword">from</span> hidmart <span class="keyword">import</span> Bot
+</nav>
 
-bot = <span class="function">Bot</span>(<span class="string">"TOKEN"</span>)
+<main class="container">
 
-<span class="decorator">@bot.on_command</span>(<span class="string">"start"</span>)
-<span class="keyword">async def</span> <span class="function">start</span>(message):
-    <span class="keyword">await</span> message.<span class="function">reply</span>(
-        <span class="string">"سلام 👋"</span>
-    )
+<div class="notice">
 
-bot.<span class="function">run</span>()</code></pre></section><section id="bot"><h2>Bot</h2><h3>ساخت Bot</h3><pre><code>bot = <span class="function">Bot</span>(<span class="string">"TOKEN"</span>)</code></pre><h3>تنظیمات Bot</h3><pre><code>bot = <span class="function">Bot</span>(
-    <span class="string">"TOKEN"</span>,
-    poll_interval=<span class="number">1.0</span>,
-    timeout=<span class="number">25</span>
-)</code></pre></section><section id="handlers"><h2>Handlerها</h2><h3>Command Handler</h3><pre><code><span class="decorator">@bot.on_command</span>(<span class="string">"start"</span>)
-<span class="keyword">async def</span> <span class="function">start</span>(message):
-    <span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام!"</span>)</code></pre><h3>چند Command</h3><pre><code><span class="decorator">@bot.on_command</span>(<span class="string">"start"</span>, <span class="string">"help"</span>)
-<span class="keyword">async def</span> <span class="function">commands</span>(message):
-    <span class="keyword">await</span> message.<span class="function">reply</span>(
-        <span class="string">"دستور دریافت شد"</span>
-    )</code></pre><h3>دریافت پیام</h3><pre><code><span class="decorator">@bot.on_message</span>()
-<span class="keyword">async def</span> <span class="function">message_handler</span>(message):
-    <span class="function">print</span>(message.text)</code></pre><h3>دریافت Text مشخص</h3><pre><code><span class="decorator">@bot.on_text</span>(<span class="string">"سلام"</span>)
-<span class="keyword">async def</span> <span class="function">hello</span>(message):
-    <span class="keyword">await</span> message.<span class="function">reply</span>(
-        <span class="string">"سلام 👋"</span>
-    )</code></pre></section><section id="message"><h2>Message</h2><h3>اطلاعات پیام</h3><pre><code>message.message_id
+    <div class="notice-title">
+        مستندات رسمی HidMart
+    </div>
+
+    کتابخانه‌ای ساده برای ساخت ربات‌های Python در بله.
+
+    <br>
+
+    <a class="button"
+       href="https://github.com/HidMart/HidMart"
+       target="_blank">
+        مشاهده پروژه در GitHub
+    </a>
+
+</div>
+
+
+<section id="features">
+
+<h2>قابلیت‌ها</h2>
+
+<div class="feature-grid">
+
+<div class="feature">
+<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+<rect x="4" y="4" width="16" height="16" rx="3"/>
+<path d="M8 9h8M8 13h6M8 17h4"/>
+</svg>
+ساخت Bot
+</div>
+
+<div class="feature">دریافت پیام</div>
+<div class="feature">دریافت Command</div>
+<div class="feature">دریافت Text مشخص</div>
+<div class="feature">پاسخ به پیام</div>
+<div class="feature">ارسال پیام</div>
+<div class="feature">ارسال عکس</div>
+<div class="feature">ارسال ویدیو</div>
+<div class="feature">ارسال Audio</div>
+<div class="feature">ارسال Document</div>
+<div class="feature">ارسال Voice</div>
+<div class="feature">ارسال Location</div>
+<div class="feature">ویرایش پیام</div>
+<div class="feature">حذف پیام</div>
+<div class="feature">اطلاعات Bot</div>
+<div class="feature">اطلاعات Chat</div>
+<div class="feature">اطلاعات عضو Chat</div>
+<div class="feature">دریافت Updates</div>
+<div class="feature">Polling</div>
+<div class="feature">مدیریت خطاها</div>
+<div class="feature">پشتیبانی از Async</div>
+
+</div>
+
+</section>
+
+
+<section id="install">
+
+<h2>نصب</h2>
+
+<pre><code>pip install hidmart</code></pre>
+
+</section>
+
+
+<section id="quickstart">
+
+<h2>شروع سریع</h2>
+
+<pre><code><span class="kw">from</span> hidmart <span class="kw">import</span> <span class="cls">Bot</span>
+
+bot = <span class="cls">Bot</span>(<span class="str">"TOKEN"</span>)
+
+<span class="method">@bot.on_command</span>(<span class="str">"start"</span>)
+<span class="kw">async def</span> <span class="fn">start</span>(message):
+    <span class="kw">await</span> message.<span class="method">reply</span>(<span class="str">"سلام"</span>)
+
+bot.<span class="method">run</span>()</code></pre>
+
+</section>
+
+
+<section id="bot">
+
+<h2>Bot</h2>
+
+<h3>ساخت Bot</h3>
+
+<pre><code>bot = Bot(<span class="str">"TOKEN"</span>)</code></pre>
+
+<h3>تنظیمات Bot</h3>
+
+<pre><code>bot = Bot(
+    <span class="str">"TOKEN"</span>,
+    poll_interval=<span class="num">1.0</span>,
+    timeout=<span class="num">25</span>
+)</code></pre>
+
+</section>
+
+
+<section id="handlers">
+
+<h2>Handler</h2>
+
+<h3>دریافت Command</h3>
+
+<pre><code><span class="method">@bot.on_command</span>(<span class="str">"start"</span>)
+<span class="kw">async def</span> <span class="fn">start</span>(message):
+    <span class="kw">await</span> message.<span class="method">reply</span>(<span class="str">"سلام!"</span>)</code></pre>
+
+<h3>چند Command</h3>
+
+<pre><code><span class="method">@bot.on_command</span>(<span class="str">"start"</span>, <span class="str">"help"</span>)
+<span class="kw">async def</span> <span class="fn">commands</span>(message):
+    <span class="kw">await</span> message.<span class="method">reply</span>(<span class="str">"دستور دریافت شد"</span>)</code></pre>
+
+<h3>دریافت پیام</h3>
+
+<pre><code><span class="method">@bot.on_message</span>()
+<span class="kw">async def</span> <span class="fn">message_handler</span>(message):
+    <span class="fn">print</span>(message.text)</code></pre>
+
+<h3>دریافت Text مشخص</h3>
+
+<pre><code><span class="method">@bot.on_text</span>(<span class="str">"سلام"</span>)
+<span class="kw">async def</span> <span class="fn">hello</span>(message):
+    <span class="kw">await</span> message.<span class="method">reply</span>(<span class="str">"سلام!"</span>)</code></pre>
+
+</section>
+
+
+<section id="message">
+
+<h2>Message</h2>
+
+<h3>اطلاعات پیام</h3>
+
+<pre><code>message.message_id
 message.id
 message.text
 message.chat
 message.from_user
 message.sender
-message.raw</code></pre><h3>پاسخ به پیام</h3><pre><code><span class="keyword">await</span> message.<span class="function">reply</span>(<span class="string">"سلام!"</span>)</code></pre><h3>پاسخ جایگزین</h3><pre><code><span class="keyword">await</span> message.<span class="function">answer</span>(<span class="string">"سلام!"</span>)</code></pre><h3>حذف پیام</h3><pre><code><span class="keyword">await</span> message.<span class="function">delete</span>()</code></pre></section><section id="user"><h2>User</h2><h3>دریافت اطلاعات کاربر</h3><pre><code>message.from_user</code></pre><h3>ویژگی‌ها</h3><pre><code>user.id
+message.raw</code></pre>
+
+<h3>پاسخ به پیام</h3>
+
+<pre><code><span class="kw">await</span> message.<span class="method">reply</span>(<span class="str">"سلام!"</span>)</code></pre>
+
+<h3>پاسخ با Answer</h3>
+
+<pre><code><span class="kw">await</span> message.<span class="method">answer</span>(<span class="str">"سلام!"</span>)</code></pre>
+
+<h3>حذف پیام</h3>
+
+<pre><code><span class="kw">await</span> message.<span class="method">delete</span>()</code></pre>
+
+</section>
+
+
+<section id="user">
+
+<h2>User</h2>
+
+<h3>اطلاعات کاربر</h3>
+
+<pre><code>message.from_user</code></pre>
+
+<h3>ویژگی‌ها</h3>
+
+<pre><code>user.id
 user.first_name
 user.last_name
 user.username
-user.full_name</code></pre></section><section id="chat"><h2>Chat</h2><h3>دریافت اطلاعات گفتگو</h3><pre><code>message.chat</code></pre><h3>ویژگی‌ها</h3><pre><code>chat.id
+user.full_name</code></pre>
+
+</section>
+
+
+<section id="chat">
+
+<h2>Chat</h2>
+
+<h3>اطلاعات گفتگو</h3>
+
+<pre><code>message.chat</code></pre>
+
+<h3>ویژگی‌ها</h3>
+
+<pre><code>chat.id
 chat.type
 chat.title
-chat.username</code></pre><h3>بررسی Private</h3><pre><code><span class="keyword">if</span> message.chat.is_private:
-    <span class="function">print</span>(<span class="string">"Private"</span>)</code></pre><h3>بررسی Group</h3><pre><code><span class="keyword">if</span> message.chat.is_group:
-    <span class="function">print</span>(<span class="string">"Group"</span>)</code></pre></section><section id="sending"><h2>متدهای ارسال</h2><h3>ارسال پیام</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_message</span>(
+chat.username</code></pre>
+
+<h3>Private</h3>
+
+<pre><code><span class="kw">if</span> message.chat.is_private:
+    <span class="fn">print</span>(<span class="str">"Private"</span>)</code></pre>
+
+<h3>Group</h3>
+
+<pre><code><span class="kw">if</span> message.chat.is_group:
+    <span class="fn">print</span>(<span class="str">"Group"</span>)</code></pre>
+
+</section>
+
+
+<section id="sending">
+
+<h2>ارسال پیام و فایل</h2>
+
+<h3>ارسال پیام</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_message</span>(
     chat_id,
-    <span class="string">"سلام!"</span>
-)</code></pre><h3>ارسال عکس</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_photo</span>(
+    <span class="str">"سلام!"</span>
+)</code></pre>
+
+<h3>ارسال عکس</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_photo</span>(
     chat_id,
     photo,
-    caption=<span class="string">"عکس"</span>
-)</code></pre><h3>ارسال ویدیو</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_video</span>(
+    caption=<span class="str">"عکس"</span>
+)</code></pre>
+
+<h3>ارسال ویدیو</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_video</span>(
     chat_id,
     video,
-    caption=<span class="string">"ویدیو"</span>
-)</code></pre><h3>ارسال Audio</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_audio</span>(
+    caption=<span class="str">"ویدیو"</span>
+)</code></pre>
+
+<h3>ارسال Audio</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_audio</span>(
     chat_id,
     audio,
-    caption=<span class="string">"Audio"</span>
-)</code></pre><h3>ارسال Document</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_document</span>(
+    caption=<span class="str">"Audio"</span>
+)</code></pre>
+
+<h3>ارسال Document</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_document</span>(
     chat_id,
     document,
-    caption=<span class="string">"File"</span>
-)</code></pre><h3>ارسال Voice</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_voice</span>(
+    caption=<span class="str">"File"</span>
+)</code></pre>
+
+<h3>ارسال Voice</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_voice</span>(
     chat_id,
     voice,
-    caption=<span class="string">"Voice"</span>
-)</code></pre><h3>ارسال Location</h3><pre><code><span class="keyword">await</span> bot.<span class="function">send_location</span>(
+    caption=<span class="str">"Voice"</span>
+)</code></pre>
+
+<h3>ارسال Location</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">send_location</span>(
     chat_id,
     latitude,
     longitude
-)</code></pre></section><section><h2>مدیریت پیام</h2><h3>ویرایش پیام</h3><pre><code><span class="keyword">await</span> bot.<span class="function">edit_message_text</span>(
+)</code></pre>
+
+</section>
+
+
+<section>
+
+<h2>مدیریت پیام</h2>
+
+<h3>ویرایش پیام</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">edit_message_text</span>(
     chat_id,
     message_id,
-    <span class="string">"متن جدید"</span>
-)</code></pre><h3>حذف پیام</h3><pre><code><span class="keyword">await</span> bot.<span class="function">delete_message</span>(
+    <span class="str">"متن جدید"</span>
+)</code></pre>
+
+<h3>حذف پیام</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">delete_message</span>(
     chat_id,
     message_id
-)</code></pre></section><section><h2>اطلاعات Bot و Chat</h2><h3>اطلاعات Bot</h3><pre><code>me = <span class="keyword">await</span> bot.<span class="function">get_me</span>()</code></pre><h3>اطلاعات Chat</h3><pre><code>chat = <span class="keyword">await</span> bot.<span class="function">get_chat</span>(
-    chat_id
-)</code></pre><h3>اطلاعات عضو Chat</h3><pre><code>member = <span class="keyword">await</span> bot.<span class="function">get_chat_member</span>(
+)</code></pre>
+
+</section>
+
+
+<section id="updates">
+
+<h2>Updates</h2>
+
+<h3>دریافت Updates</h3>
+
+<pre><code>updates = <span class="kw">await</span> bot.<span class="method">get_updates</span>()</code></pre>
+
+<h3>تنظیمات Updates</h3>
+
+<pre><code>updates = <span class="kw">await</span> bot.<span class="method">get_updates</span>(
+    offset=<span class="num">10</span>,
+    timeout=<span class="num">25</span>,
+    limit=<span class="num">10</span>
+)</code></pre>
+
+</section>
+
+
+<section>
+
+<h2>اطلاعات Bot و Chat</h2>
+
+<h3>اطلاعات Bot</h3>
+
+<pre><code>me = <span class="kw">await</span> bot.<span class="method">get_me</span>()</code></pre>
+
+<h3>اطلاعات Chat</h3>
+
+<pre><code>chat = <span class="kw">await</span> bot.<span class="method">get_chat</span>(chat_id)</code></pre>
+
+<h3>اطلاعات عضو Chat</h3>
+
+<pre><code>member = <span class="kw">await</span> bot.<span class="method">get_chat_member</span>(
     chat_id,
     user_id
-)</code></pre></section><section id="updates"><h2>Updates</h2><h3>دریافت Updates</h3><pre><code>updates = <span class="keyword">await</span> bot.<span class="function">get_updates</span>()</code></pre><h3>تنظیمات Updates</h3><pre><code>updates = <span class="keyword">await</span> bot.<span class="function">get_updates</span>(
-    offset=<span class="number">10</span>,
-    timeout=<span class="number">25</span>,
-    limit=<span class="number">10</span>
-)</code></pre></section><section><h2>اجرای Bot</h2><h3>Run</h3><pre><code>bot.<span class="function">run</span>()</code></pre><h3>Start</h3><pre><code><span class="keyword">await</span> bot.<span class="function">start</span>()</code></pre><h3>Stop</h3><pre><code><span class="keyword">await</span> bot.<span class="function">stop</span>()</code></pre><h3>Polling</h3><pre><code>bot.<span class="function">polling</span>()</code></pre></section><section id="errors"><h2>مدیریت خطا</h2><h3>خطاهای موجود</h3><ul>
+)</code></pre>
+
+</section>
+
+
+<section>
+
+<h2>اجرای Bot</h2>
+
+<h3>Run</h3>
+
+<pre><code>bot.<span class="method">run</span>()</code></pre>
+
+<h3>Start</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">start</span>()</code></pre>
+
+<h3>Stop</h3>
+
+<pre><code><span class="kw">await</span> bot.<span class="method">stop</span>()</code></pre>
+
+<h3>Polling</h3>
+
+<pre><code>bot.<span class="method">polling</span>()</code></pre>
+
+</section>
+
+
+<section id="errors">
+
+<h2>مدیریت خطا</h2>
+
+<h3>خطاهای موجود</h3>
+
+<ul>
     <li>HidMartError</li>
     <li>APIError</li>
     <li>NetworkError</li>
     <li>InvalidTokenError</li>
-</ul><h3>Import خطاها</h3><pre><code><span class="keyword">from</span> hidmart <span class="keyword">import</span> (
+</ul>
+
+<h3>استفاده</h3>
+
+<pre><code><span class="kw">from</span> hidmart <span class="kw">import</span> (
     HidMartError,
     APIError,
     NetworkError,
     InvalidTokenError
-)</code></pre><h3>مثال</h3><pre><code><span class="keyword">try</span>:
-    <span class="keyword">await</span> bot.<span class="function">send_message</span>(
+)
+
+<span class="kw">try</span>:
+    <span class="kw">await</span> bot.<span class="method">send_message</span>(
         chat_id,
-        <span class="string">"Hello"</span>
+        <span class="str">"Hello"</span>
     )
 
-<span class="keyword">except</span> InvalidTokenError:
-    <span class="function">print</span>(<span class="string">"Invalid Token"</span>)</code></pre></section><section id="classes"><h2>کلاس‌ها</h2><div class="method-list"><div class="method"><code>Bot</code></div>
-<div class="method"><code>Message</code></div>
-<div class="method"><code>User</code></div>
-<div class="method"><code>Chat</code></div>
-<div class="method"><code>Handler</code></div>
-<div class="method"><code>CommandHandler</code></div>
-<div class="method"><code>MessageHandler</code></div>
-<div class="method"><code>TextHandler</code></div></div><h2>Handlerهای Bot</h2><div class="method-list"><div class="method"><code>on_command()</code></div>
-<div class="method"><code>on_message()</code></div>
-<div class="method"><code>on_text()</code></div></div><h2>متدهای ارسال</h2><div class="method-list"><div class="method"><code>send_message()</code></div>
-<div class="method"><code>send_photo()</code></div>
-<div class="method"><code>send_video()</code></div>
-<div class="method"><code>send_audio()</code></div>
-<div class="method"><code>send_document()</code></div>
-<div class="method"><code>send_voice()</code></div>
-<div class="method"><code>send_location()</code></div></div><h2>متدهای Message</h2><div class="method-list"><div class="method"><code>reply()</code></div>
-<div class="method"><code>answer()</code></div>
-<div class="method"><code>delete()</code></div></div><h2>متدهای مدیریت پیام</h2><div class="method-list"><div class="method"><code>edit_message_text()</code></div>
-<div class="method"><code>delete_message()</code></div></div><h2>متدهای اطلاعات</h2><div class="method-list"><div class="method"><code>get_me()</code></div>
-<div class="method"><code>get_chat()</code></div>
-<div class="method"><code>get_chat_member()</code></div>
-<div class="method"><code>get_updates()</code></div></div><h2>متدهای اجرای Bot</h2><div class="method-list"><div class="method"><code>start()</code></div>
-<div class="method"><code>stop()</code></div>
-<div class="method"><code>polling()</code></div>
-<div class="method"><code>run()</code></div></div></section><section id="support"><h2>ارتباط با پشتیبانی</h2><div class="support"><p>
-برای گزارش مشکل، پیشنهاد یا دریافت راهنمایی درباره HidMart
-می‌توانید با پشتیبانی در بله در ارتباط باشید.
-</p><p>
-آیدی پشتیبانی:
-<a href="https://ble.ir/MARTO_developer" target="_blank">
-@MARTO_developer
+<span class="kw">except</span> InvalidTokenError:
+    <span class="fn">print</span>(<span class="str">"Invalid Token"</span>)</code></pre>
+
+</section>
+
+
+<section>
+
+<h2>کلاس‌ها</h2>
+
+<div class="info-box">
+
+Bot<br>
+Message<br>
+User<br>
+Chat<br>
+Handler<br>
+CommandHandler<br>
+MessageHandler<br>
+TextHandler
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>متدهای اصلی</h2>
+
+<div class="info-box">
+
+<strong>Handlers</strong><br>
+on_command()<br>
+on_message()<br>
+on_text()
+
+<br><br>
+
+<strong>ارسال</strong><br>
+send_message()<br>
+send_photo()<br>
+send_video()<br>
+send_audio()<br>
+send_document()<br>
+send_voice()<br>
+send_location()
+
+<br><br>
+
+<strong>پیام</strong><br>
+edit_message_text()<br>
+delete_message()<br>
+reply()<br>
+answer()<br>
+delete()
+
+<br><br>
+
+<strong>اطلاعات</strong><br>
+get_me()<br>
+get_chat()<br>
+get_chat_member()<br>
+get_updates()
+
+<br><br>
+
+<strong>اجرای Bot</strong><br>
+start()<br>
+stop()<br>
+polling()<br>
+run()
+
+</div>
+
+</section>
+
+
+<section id="support">
+
+<div class="support">
+
+<svg viewBox="0 0 24 24" fill="none"
+     stroke="white" stroke-width="1.8">
+    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.5
+             9.6 9.6 0 0 1-4-.9L3 20l1.4-4
+             A8.5 8.5 0 1 1 21 11.5Z"/>
+    <path d="M8 11h.01M12 11h.01M16 11h.01"/>
+</svg>
+
+<h2>پشتیبانی</h2>
+
+<p>
+برای ارتباط با توسعه‌دهنده و دریافت راهنمایی:
+</p>
+
+<a class="button"
+   href="https://ble.ir/MARTO_developer"
+   target="_blank">
+    @MARTO_developer
 </a>
-</p></div></section><section><h2>نسخه</h2><div class="info">
-    <strong>HidMart 0.2.0</strong>
-    <br>
-    نسخه فعلی کتابخانه
-</div></section><section><h2>وضعیت پروژه</h2><div class="info">
-    HidMart در حال توسعه است.
-    <br>
-    قابلیت‌ها و امکانات جدید در نسخه‌های آینده اضافه خواهند شد.
-</div></section></main><footer>
-    HidMart — Python Library for Bale Bots
-    <br>
-    Version 0.2.0
-</footer></body>
+
+</div>
+
+</section>
+
+
+<section>
+
+<h2>نسخه</h2>
+
+<div class="info-box">
+    HidMart 0.2.0
+</div>
+
+</section>
+
+
+<section>
+
+<h2>وضعیت پروژه</h2>
+
+<div class="info-box">
+
+HidMart در حال توسعه است.
+
+<br>
+
+قابلیت‌های جدید در نسخه‌های آینده اضافه خواهند شد.
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+HidMart — Python Library for Bale Bots
+
+<br>
+
+Version 0.2.0
+
+</footer>
+
+</body>
 </html>
