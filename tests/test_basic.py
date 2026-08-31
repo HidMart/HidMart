@@ -3,26 +3,19 @@ from hidmart import (
     Message,
     User,
     Chat,
-    APIError,
-    NetworkError,
 )
 
 
-def test_bot_creation():
+def test_version_import():
+    import hidmart
 
-    bot = Bot(
-        "TEST_TOKEN"
+    assert hasattr(
+        hidmart,
+        "__version__"
     )
-
-    assert bot.token == "TEST_TOKEN"
-
-    assert bot.handlers == []
-
-    assert bot.offset is None
 
 
 def test_user():
-
     user = User(
         id=123,
         first_name="Ali",
@@ -31,39 +24,48 @@ def test_user():
     )
 
     assert user.id == 123
-
-    assert user.username == "ali"
-
     assert user.full_name == "Ali Test"
+    assert user.username == "ali"
 
 
 def test_chat():
-
     chat = Chat(
-        id=123,
+        id=100,
         type="private",
     )
 
-    assert chat.id == 123
-
-    assert chat.is_private is True
-
-    assert chat.is_group is False
+    assert chat.id == 100
+    assert chat.is_private
+    assert not chat.is_group
 
 
 def test_message():
-
     chat = Chat(
-        id=123,
+        id=100,
         type="private",
+    )
+
+    user = User(
+        id=123,
+        first_name="Ali",
     )
 
     message = Message(
         message_id=1,
         chat=chat,
-        text="Hello",
+        from_user=user,
+        text="سلام",
     )
 
     assert message.id == 1
+    assert message.text == "سلام"
+    assert message.sender.id == 123
 
-    assert message.text == "Hello"
+
+def test_bot_creation():
+    bot = Bot(
+        "TEST_TOKEN"
+    )
+
+    assert bot.token == "TEST_TOKEN"
+    assert bot.running is False
