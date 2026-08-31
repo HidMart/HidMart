@@ -2,19 +2,16 @@ from dataclasses import dataclass
 from typing import Optional, Any, Dict
 
 
-# =========================================
-# User
-# =========================================
-
 @dataclass
 class User:
+
     id: int
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     username: Optional[str] = None
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data):
         return cls(
             id=data.get("id"),
             first_name=data.get("first_name"),
@@ -35,19 +32,16 @@ class User:
         return " ".join(parts)
 
 
-# =========================================
-# Chat
-# =========================================
-
 @dataclass
 class Chat:
+
     id: int
     type: Optional[str] = None
     title: Optional[str] = None
     username: Optional[str] = None
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data):
         return cls(
             id=data.get("id"),
             type=data.get("type"),
@@ -61,18 +55,12 @@ class Chat:
 
     @property
     def is_group(self):
-        return self.type in (
-            "group",
-            "supergroup",
-        )
+        return self.type in ("group", "supergroup")
 
-
-# =========================================
-# Message
-# =========================================
 
 @dataclass
 class Message:
+
     message_id: int
     chat: Chat
 
@@ -82,16 +70,9 @@ class Message:
     raw: Optional[Dict[str, Any]] = None
     bot: Any = None
 
-    # =====================================
-    # Create Message
-    # =====================================
-
     @classmethod
-    def from_dict(
-        cls,
-        data: Dict[str, Any],
-        bot=None,
-    ):
+    def from_dict(cls, data, bot=None):
+
         user_data = data.get("from")
         chat_data = data.get("chat", {})
 
@@ -108,10 +89,6 @@ class Message:
             bot=bot,
         )
 
-    # =====================================
-    # Basic information
-    # =====================================
-
     @property
     def id(self):
         return self.message_id
@@ -122,77 +99,58 @@ class Message:
 
     @property
     def caption(self):
+
         if not self.raw:
             return None
 
         return self.raw.get("caption")
 
-    # =====================================
+    # -------------------------
     # Media
-    # =====================================
+    # -------------------------
 
     @property
     def photo(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("photo")
+        return self._media("photo")
 
     @property
     def video(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("video")
+        return self._media("video")
 
     @property
     def audio(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("audio")
+        return self._media("audio")
 
     @property
     def document(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("document")
+        return self._media("document")
 
     @property
     def voice(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("voice")
+        return self._media("voice")
 
     @property
     def sticker(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("sticker")
+        return self._media("sticker")
 
     @property
     def location(self):
-        if not self.raw:
-            return None
-
-        return self.raw.get("location")
+        return self._media("location")
 
     @property
     def contact(self):
+        return self._media("contact")
+
+    def _media(self, name):
+
         if not self.raw:
             return None
 
-        return self.raw.get("contact")
-
-    # =====================================
-    # Media status
-    # =====================================
+        return self.raw.get(name)
 
     @property
     def has_media(self):
+
         return any([
             self.photo is not None,
             self.video is not None,
@@ -205,50 +163,38 @@ class Message:
         ])
 
     def has_media_type(self, media_type):
+
         return getattr(
             self,
             media_type,
             None,
         ) is not None
 
-    # =====================================
-    # Reply message
-    # =====================================
+    # -------------------------
+    # Replies
+    # -------------------------
 
-    async def reply(
-        self,
-        text: str,
-        **kwargs,
-    ):
+    async def reply(self, text, **kwargs):
+
         return await self.bot.send_message(
-            chat_id=self.chat.id,
-            text=text,
+            self.chat.id,
+            text,
             **kwargs,
         )
 
-    async def answer(
-        self,
-        text: str,
-        **kwargs,
-    ):
+    async def answer(self, text, **kwargs):
+
         return await self.reply(
             text,
             **kwargs,
         )
 
-    # =====================================
-    # Delete message
-    # =====================================
-
     async def delete(self):
-        return await self.bot.delete_message(
-            chat_id=self.chat.id,
-            message_id=self.message_id,
-        )
 
-    # =====================================
-    # Reply Photo
-    # =====================================
+        return await self.bot.delete_message(
+            self.chat.id,
+            self.message_id,
+        )
 
     async def reply_photo(
         self,
@@ -256,6 +202,7 @@ class Message:
         caption=None,
         **kwargs,
     ):
+
         return await self.bot.send_photo(
             self.chat.id,
             photo,
@@ -263,16 +210,13 @@ class Message:
             **kwargs,
         )
 
-    # =====================================
-    # Reply Video
-    # =====================================
-
     async def reply_video(
         self,
         video,
         caption=None,
         **kwargs,
     ):
+
         return await self.bot.send_video(
             self.chat.id,
             video,
@@ -280,16 +224,13 @@ class Message:
             **kwargs,
         )
 
-    # =====================================
-    # Reply Audio
-    # =====================================
-
     async def reply_audio(
         self,
         audio,
         caption=None,
         **kwargs,
     ):
+
         return await self.bot.send_audio(
             self.chat.id,
             audio,
@@ -297,16 +238,13 @@ class Message:
             **kwargs,
         )
 
-    # =====================================
-    # Reply Document
-    # =====================================
-
     async def reply_document(
         self,
         document,
         caption=None,
         **kwargs,
     ):
+
         return await self.bot.send_document(
             self.chat.id,
             document,
@@ -314,16 +252,13 @@ class Message:
             **kwargs,
         )
 
-    # =====================================
-    # Reply Voice
-    # =====================================
-
     async def reply_voice(
         self,
         voice,
         caption=None,
         **kwargs,
     ):
+
         return await self.bot.send_voice(
             self.chat.id,
             voice,
@@ -331,34 +266,26 @@ class Message:
             **kwargs,
         )
 
-    # =====================================
-    # Raw data access
-    # =====================================
+    # -------------------------
+    # Raw
+    # -------------------------
 
-    def get(
-        self,
-        key,
-        default=None,
-    ):
+    def get(self, key, default=None):
+
         if not self.raw:
             return default
 
-        return self.raw.get(
-            key,
-            default,
-        )
+        return self.raw.get(key, default)
 
     def __getitem__(self, key):
+
         if not self.raw:
             raise KeyError(key)
 
         return self.raw[key]
 
-    # =====================================
-    # String representation
-    # =====================================
-
     def __repr__(self):
+
         return (
             f"Message("
             f"id={self.message_id}, "
