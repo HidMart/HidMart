@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hidmart"
-version = "0.2.1"
-description = "Async Python framework for building token-based bots for Bale Messenger"
+version = "0.3.0"
+description = "Async Python framework for building bots for Bale Messenger"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
+license = {text = "MIT"}
 
 authors = [
     {name = "HidMart Team"}
