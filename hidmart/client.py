@@ -11,9 +11,6 @@ from .exceptions import (
 
 
 class BaleClient:
-    """
-    Low-level asynchronous client for Bale Bot API.
-    """
 
     def __init__(
         self,
@@ -22,8 +19,11 @@ class BaleClient:
         timeout: float = 30.0,
         max_retries: int = 3,
     ):
+
         if not token:
-            raise ValueError("Bot token is required")
+            raise ValueError(
+                "Bot token is required"
+            )
 
         self.token = token
         self.base_url = base_url.rstrip("/")
@@ -34,25 +34,28 @@ class BaleClient:
             timeout=httpx.Timeout(timeout)
         )
 
-    def _url(self, method: str) -> str:
-        return f"{self.base_url}/bot{self.token}/{method}"
+    def _url(self, method):
+
+        return (
+            f"{self.base_url}/bot"
+            f"{self.token}/{method}"
+        )
 
     async def call(
         self,
-        method: str,
+        method,
         data: Optional[Dict[str, Any]] = None,
-    ) -> Any:
-        """
-        Call a Bale Bot API method.
-        """
+    ):
 
         payload = data or {}
-
         last_error = None
 
-        for attempt in range(self.max_retries + 1):
+        for attempt in range(
+            self.max_retries + 1
+        ):
 
             try:
+
                 response = await self.http.post(
                     self._url(method),
                     json=payload,
@@ -62,20 +65,26 @@ class BaleClient:
 
                 try:
                     result = response.json()
+
                 except ValueError as exc:
+
                     raise APIError(
-                        "Invalid JSON response from Bale API"
+                        "Invalid JSON response"
                     ) from exc
 
                 if not result.get("ok", False):
 
-                    error_code = result.get("error_code")
+                    error_code = result.get(
+                        "error_code"
+                    )
+
                     description = result.get(
                         "description",
                         "Bale API request failed",
                     )
 
                     if error_code == 401:
+
                         raise InvalidTokenError(
                             description
                         )
@@ -94,47 +103,59 @@ class BaleClient:
                 raise
 
             except httpx.HTTPStatusError as exc:
+
                 last_error = exc
 
                 if attempt >= self.max_retries:
+
                     raise NetworkError(
-                        f"HTTP error: {exc.response.status_code}"
+                        f"HTTP error: "
+                        f"{exc.response.status_code}"
                     ) from exc
 
             except httpx.RequestError as exc:
+
                 last_error = exc
 
                 if attempt >= self.max_retries:
+
                     raise NetworkError(
                         f"Network error: {exc}"
                     ) from exc
 
             except httpx.HTTPError as exc:
+
                 last_error = exc
 
                 if attempt >= self.max_retries:
+
                     raise NetworkError(
                         f"HTTP error: {exc}"
                     ) from exc
 
             if attempt < self.max_retries:
-                await asyncio.sleep(2 ** attempt)
+
+                await asyncio.sleep(
+                    2 ** attempt
+                )
 
         raise NetworkError(
             f"Request failed: {last_error}"
         )
 
     async def get_me(self):
+
         return await self.call("getMe")
 
     async def get_updates(
         self,
-        offset: Optional[int] = None,
-        timeout: int = 25,
-        limit: Optional[int] = None,
+        offset=None,
+        timeout=25,
+        limit=None,
     ):
+
         data = {
-            "timeout": timeout,
+            "timeout": timeout
         }
 
         if offset is not None:
@@ -151,9 +172,10 @@ class BaleClient:
     async def send_message(
         self,
         chat_id,
-        text: str,
+        text,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "text": text,
@@ -170,9 +192,10 @@ class BaleClient:
         self,
         chat_id,
         photo,
-        caption: Optional[str] = None,
+        caption=None,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "photo": photo,
@@ -192,9 +215,10 @@ class BaleClient:
         self,
         chat_id,
         video,
-        caption: Optional[str] = None,
+        caption=None,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "video": video,
@@ -214,9 +238,10 @@ class BaleClient:
         self,
         chat_id,
         audio,
-        caption: Optional[str] = None,
+        caption=None,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "audio": audio,
@@ -236,9 +261,10 @@ class BaleClient:
         self,
         chat_id,
         document,
-        caption: Optional[str] = None,
+        caption=None,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "document": document,
@@ -258,9 +284,10 @@ class BaleClient:
         self,
         chat_id,
         voice,
-        caption: Optional[str] = None,
+        caption=None,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "voice": voice,
@@ -279,10 +306,11 @@ class BaleClient:
     async def send_location(
         self,
         chat_id,
-        latitude: float,
-        longitude: float,
+        latitude,
+        longitude,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "latitude": latitude,
@@ -300,9 +328,10 @@ class BaleClient:
         self,
         chat_id,
         message_id,
-        text: str,
+        text,
         **kwargs,
     ):
+
         data = {
             "chat_id": chat_id,
             "message_id": message_id,
@@ -321,6 +350,7 @@ class BaleClient:
         chat_id,
         message_id,
     ):
+
         return await self.call(
             "deleteMessage",
             {
@@ -329,10 +359,8 @@ class BaleClient:
             },
         )
 
-    async def get_chat(
-        self,
-        chat_id,
-    ):
+    async def get_chat(self, chat_id):
+
         return await self.call(
             "getChat",
             {
@@ -345,6 +373,7 @@ class BaleClient:
         chat_id,
         user_id,
     ):
+
         return await self.call(
             "getChatMember",
             {
@@ -354,4 +383,5 @@ class BaleClient:
         )
 
     async def close(self):
+
         await self.http.aclose()
