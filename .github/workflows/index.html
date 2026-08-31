@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>HidMart Documentation</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Tahoma, sans-serif;
+        background: #ffffff;
+        color: #222;
+        line-height: 1.8;
+    }
+
+    header {
+        border-bottom: 1px solid #eee;
+        padding: 30px 20px;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 32px;
+    }
+
+    .version {
+        color: #777;
+    }
+
+    nav {
+        margin: 20px auto;
+        max-width: 1000px;
+        padding: 15px 20px;
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+
+    nav a {
+        color: #333;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
+
+    section {
+        margin-bottom: 40px;
+    }
+
+    h2 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+
+    h3 {
+        margin-top: 25px;
+    }
+
+    pre {
+        direction: ltr;
+        text-align: left;
+        background: #f7f7f7;
+        border: 1px solid #eee;
+        border-radius: 7px;
+        padding: 15px;
+        overflow-x: auto;
+    }
+
+    .notice {
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 18px;
+        margin: 25px 0;
+    }
+
+    footer {
+        border-top: 1px solid #eee;
+        padding: 25px;
+        text-align: center;
+        color: #777;
+    }
+</style>
+
+</head><body><header>
+    <div class="container">
+        <h1>HidMart</h1>
+        <div class="version">
+            کتابخانه Python برای ساخت ربات در بله
+        </div>
+        <div class="version">
+            Version: 0.2.0
+        </div>
+    </div>
+</header><nav>
+    <a href="#features">قابلیت‌ها</a>
+    <a href="#install">نصب</a>
+    <a href="#quickstart">شروع سریع</a>
+    <a href="#bot">Bot</a>
+    <a href="#handler">Handler</a>
+    <a href="#message">Message</a>
+    <a href="#errors">خطاها</a>
+</nav><main class="container"><div class="notice">
+    <strong>دوست داری سایت داکیومنت هم داشته باشی؟</strong>
+    <br>
+    برای HidMart می‌تونی یک سایت مستندات ساده و کامل داشته باشی.
+</div>
+
+<section id="features">
+    <h2>قابلیت‌ها</h2>
+
+    <ul>
+        <li>ساخت Bot</li>
+        <li>دریافت پیام</li>
+        <li>دریافت Command</li>
+        <li>دریافت Text مشخص</li>
+        <li>پاسخ به پیام</li>
+        <li>ارسال پیام</li>
+        <li>ارسال عکس</li>
+        <li>ارسال ویدیو</li>
+        <li>ارسال Audio</li>
+        <li>ارسال Document</li>
+        <li>ارسال Voice</li>
+        <li>ارسال Location</li>
+        <li>ویرایش پیام</li>
+        <li>حذف پیام</li>
+        <li>دریافت اطلاعات Bot</li>
+        <li>دریافت اطلاعات Chat</li>
+        <li>دریافت Updates</li>
+        <li>اجرای ربات با Polling</li>
+        <li>پشتیبانی از async</li>
+    </ul>
+</section>
+
+<section id="install">
+    <h2>نصب</h2>
+
+    <pre><code>pip install hidmart</code></pre>
+</section>
+
+<section id="quickstart">
+    <h2>شروع سریع</h2>
+
+    <pre><code>from hidmart import Bot
+
+bot = Bot("TOKEN")
+
+@bot.on_command("start")
+async def start(message):
+await message.reply("سلام 👋")
+
+bot.run()</code></pre>
+</section>
+
+<section id="bot">
+    <h2>Bot</h2>
+
+    <h3>ساخت Bot</h3>
+
+    <pre><code>bot = Bot("TOKEN")</code></pre>
+
+    <h3>تنظیمات</h3>
+
+    <pre><code>bot = Bot(
+"TOKEN",
+poll_interval=1.0,
+timeout=25
+
+)</code></pre>
+</section>
+
+<section id="handler">
+    <h2>Handler</h2>
+
+    <h3>دریافت Command</h3>
+
+    <pre><code>@bot.on_command("start")
+
+async def start(message):
+await message.reply("سلام!")</code></pre>
+
+    <h3>دریافت پیام</h3>
+
+    <pre><code>@bot.on_message()
+
+async def message_handler(message):
+print(message.text)</code></pre>
+
+    <h3>دریافت Text مشخص</h3>
+
+    <pre><code>@bot.on_text("سلام")
+
+async def hello(message):
+await message.reply("سلام 👋")</code></pre>
+</section>
+
+<section id="message">
+    <h2>Message</h2>
+
+    <h3>اطلاعات پیام</h3>
+
+    <pre><code>message.message_id
+
+message.id
+message.text
+message.chat
+message.from_user
+message.sender
+message.raw</code></pre>
+
+    <h3>پاسخ به پیام</h3>
+
+    <pre><code>await message.reply("سلام!")</code></pre>
+
+    <h3>حذف پیام</h3>
+
+    <pre><code>await message.delete()</code></pre>
+</section>
+
+<section id="errors">
+    <h2>مدیریت خطا</h2>
+
+    <pre><code>from hidmart import (
+HidMartError,
+APIError,
+NetworkError,
+InvalidTokenError,
+
+)
+
+try:
+await bot.send_message(
+chat_id,
+"Hello"
+)
+
+except InvalidTokenError:
+print("Invalid Token")</code></pre>
+</section>
+
+<section>
+    <h2>نسخه</h2>
+
+    <p>HidMart 0.2.0</p>
+
+    <p>
+        HidMart در حال توسعه است و قابلیت‌های جدید
+        در نسخه‌های آینده اضافه خواهند شد.
+    </p>
+</section>
+
+</main><footer>
+    HidMart — Python Library for Bale Bots
+</footer></body>
+</html>
