@@ -1,6 +1,14 @@
+"""
+HidMart
+=======
+
+Async Python framework for building Bale Messenger bots.
+
+Version: 0.4.0
+"""
+
 from .bot import Bot
 from .types import Message, User, Chat
-
 from .exceptions import (
     HidMartError,
     APIError,
@@ -8,28 +16,27 @@ from .exceptions import (
     InvalidTokenError,
 )
 
-# SelfBot
+# SelfBot API
 from .selfbot import (
     SelfBot,
     SelfBotMessage,
     SelfBotUser,
     SelfBotChat,
-)
-
-from .selfbot.exceptions import (
+    Auth,
+    AuthState,
+    NewMessage,
     SelfBotError,
     SelfBotConnectionError,
     SelfBotAuthenticationError,
-    SelfBotAPIError,
-    SelfBotNotImplementedError,
+    SelfBotNotConnectedError,
 )
 
-
 __version__ = "0.4.0"
-
+__author__ = "HidMart"
+__license__ = "MIT"
 
 __all__ = [
-    # Bot
+    # Main Bot
     "Bot",
 
     # Bot Types
@@ -45,14 +52,22 @@ __all__ = [
 
     # SelfBot
     "SelfBot",
+
+    # SelfBot Models
     "SelfBotMessage",
     "SelfBotUser",
     "SelfBotChat",
+
+    # SelfBot Auth
+    "Auth",
+    "AuthState",
+
+    # SelfBot Events
+    "NewMessage",
 
     # SelfBot Exceptions
     "SelfBotError",
     "SelfBotConnectionError",
     "SelfBotAuthenticationError",
-    "SelfBotAPIError",
-    "SelfBotNotImplementedError",
+    "SelfBotNotConnectedError",
 ]
