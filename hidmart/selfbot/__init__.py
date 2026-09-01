@@ -1,9 +1,9 @@
 from .client import SelfBot
 
 from .models import (
-    Message,
-    User,
-    Chat
+    Message as SelfBotMessage,
+    User as SelfBotUser,
+    Chat as SelfBotChat,
 )
 
 from .exceptions import (
@@ -11,15 +11,15 @@ from .exceptions import (
     SelfBotConnectionError,
     SelfBotAuthenticationError,
     SelfBotAPIError,
-    SelfBotNotImplementedError
+    SelfBotNotImplementedError,
 )
 
 
 __all__ = [
     "SelfBot",
-    "Message",
-    "User",
-    "Chat",
+    "SelfBotMessage",
+    "SelfBotUser",
+    "SelfBotChat",
     "SelfBotError",
     "SelfBotConnectionError",
     "SelfBotAuthenticationError",
