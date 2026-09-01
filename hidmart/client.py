@@ -1,4 +1,5 @@
-import asyncio
+from __future__ import annotations
+
 from typing import Any, Dict, Optional
 
 import httpx
@@ -10,176 +11,128 @@ from .exceptions import (
 )
 
 
-class BaleClient:
+class Client:
+    """
+    HTTP client used internally by HidMart.
+
+    This class handles communication with Bale Bot API.
+    """
 
     def __init__(
         self,
         token: str,
-        base_url: str = "https://tapi.bale.ai",
+        *,
         timeout: float = 30.0,
-        max_retries: int = 3,
     ):
-
         if not token:
-            raise ValueError(
-                "Bot token is required"
-            )
+            raise InvalidTokenError("Bot token is required")
 
         self.token = token
-        self.base_url = base_url.rstrip("/")
         self.timeout = timeout
-        self.max_retries = max_retries
 
-        self.http = httpx.AsyncClient(
-            timeout=httpx.Timeout(timeout)
+        self.base_url = (
+            f"https://tapi.bale.ai/bot{self.token}"
         )
 
-    def _url(self, method):
+        self._client: Optional[httpx.AsyncClient] = None
 
-        return (
-            f"{self.base_url}/bot"
-            f"{self.token}/{method}"
-        )
+    async def start(self):
+        """Create the HTTP client."""
+        if self._client is None:
+            self._client = httpx.AsyncClient(
+                timeout=self.timeout
+            )
+
+    async def close(self):
+        """Close the HTTP client."""
+        if self._client is not None:
+            await self._client.aclose()
+            self._client = None
+
+    async def __aenter__(self):
+        await self.start()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type,
+        exc_value,
+        traceback,
+    ):
+        await self.close()
+
+    async def request(
+        self,
+        method: str,
+        data: Optional[Dict[str, Any]] = None,
+    ) -> Any:
+        """
+        Send a request to Bale Bot API.
+        """
+
+        if self._client is None:
+            await self.start()
+
+        url = f"{self.base_url}/{method}"
+
+        try:
+            response = await self._client.post(
+                url,
+                json=data or {},
+            )
+
+        except httpx.HTTPError as exc:
+            raise NetworkError(
+                f"Network error: {exc}"
+            ) from exc
+
+        if response.status_code == 401:
+            raise InvalidTokenError(
+                "Invalid bot token"
+            )
+
+        try:
+            result = response.json()
+        except ValueError as exc:
+            raise APIError(
+                "Invalid JSON response from Bale API"
+            ) from exc
+
+        if not result.get("ok", False):
+            description = result.get(
+                "description",
+                "Unknown API error",
+            )
+
+            raise APIError(
+                description
+            )
+
+        return result.get("result")
 
     async def call(
         self,
-        method,
+        method: str,
         data: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> Any:
+        """
+        Alias for request().
+        """
 
-        payload = data or {}
-        last_error = None
-
-        for attempt in range(
-            self.max_retries + 1
-        ):
-
-            try:
-
-                response = await self.http.post(
-                    self._url(method),
-                    json=payload,
-                )
-
-                response.raise_for_status()
-
-                try:
-                    result = response.json()
-
-                except ValueError as exc:
-
-                    raise APIError(
-                        "Invalid JSON response"
-                    ) from exc
-
-                if not result.get("ok", False):
-
-                    error_code = result.get(
-                        "error_code"
-                    )
-
-                    description = result.get(
-                        "description",
-                        "Bale API request failed",
-                    )
-
-                    if error_code == 401:
-
-                        raise InvalidTokenError(
-                            description
-                        )
-
-                    raise APIError(
-                        description=description,
-                        error_code=error_code,
-                    )
-
-                return result.get("result")
-
-            except InvalidTokenError:
-                raise
-
-            except APIError:
-                raise
-
-            except httpx.HTTPStatusError as exc:
-
-                last_error = exc
-
-                if attempt >= self.max_retries:
-
-                    raise NetworkError(
-                        f"HTTP error: "
-                        f"{exc.response.status_code}"
-                    ) from exc
-
-            except httpx.RequestError as exc:
-
-                last_error = exc
-
-                if attempt >= self.max_retries:
-
-                    raise NetworkError(
-                        f"Network error: {exc}"
-                    ) from exc
-
-            except httpx.HTTPError as exc:
-
-                last_error = exc
-
-                if attempt >= self.max_retries:
-
-                    raise NetworkError(
-                        f"HTTP error: {exc}"
-                    ) from exc
-
-            if attempt < self.max_retries:
-
-                await asyncio.sleep(
-                    2 ** attempt
-                )
-
-        raise NetworkError(
-            f"Request failed: {last_error}"
+        return await self.request(
+            method,
+            data,
         )
-
-    # ==================================
-    # INFORMATION
-    # ==================================
 
     async def get_me(self):
-
         return await self.call(
             "getMe"
-        )
-
-    async def get_updates(
-        self,
-        offset=None,
-        timeout=25,
-        limit=None,
-    ):
-
-        data = {
-            "timeout": timeout
-        }
-
-        if offset is not None:
-            data["offset"] = offset
-
-        if limit is not None:
-            data["limit"] = limit
-
-        return await self.call(
-            "getUpdates",
-            data,
         )
 
     async def get_chat(
         self,
         chat_id,
     ):
-
         return await self.call(
             "getChat",
             {
@@ -192,7 +145,6 @@ class BaleClient:
         chat_id,
         user_id,
     ):
-
         return await self.call(
             "getChatMember",
             {
@@ -201,21 +153,44 @@ class BaleClient:
             },
         )
 
-    # ==================================
-    # SEND MESSAGE
-    # ==================================
+    async def get_updates(
+        self,
+        *,
+        offset=None,
+        limit=None,
+        timeout=None,
+    ):
+        data = {}
+
+        if offset is not None:
+            data["offset"] = offset
+
+        if limit is not None:
+            data["limit"] = limit
+
+        if timeout is not None:
+            data["timeout"] = timeout
+
+        return await self.call(
+            "getUpdates",
+            data,
+        )
 
     async def send_message(
         self,
         chat_id,
         text,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "text": text,
         }
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -224,18 +199,15 @@ class BaleClient:
             data,
         )
 
-    # ==================================
-    # MEDIA
-    # ==================================
-
     async def send_photo(
         self,
         chat_id,
         photo,
+        *,
         caption=None,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "photo": photo,
@@ -243,6 +215,9 @@ class BaleClient:
 
         if caption is not None:
             data["caption"] = caption
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -255,10 +230,11 @@ class BaleClient:
         self,
         chat_id,
         video,
+        *,
         caption=None,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "video": video,
@@ -266,6 +242,9 @@ class BaleClient:
 
         if caption is not None:
             data["caption"] = caption
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -278,10 +257,11 @@ class BaleClient:
         self,
         chat_id,
         audio,
+        *,
         caption=None,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "audio": audio,
@@ -289,6 +269,9 @@ class BaleClient:
 
         if caption is not None:
             data["caption"] = caption
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -301,10 +284,11 @@ class BaleClient:
         self,
         chat_id,
         document,
+        *,
         caption=None,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "document": document,
@@ -312,6 +296,9 @@ class BaleClient:
 
         if caption is not None:
             data["caption"] = caption
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -324,10 +311,11 @@ class BaleClient:
         self,
         chat_id,
         voice,
+        *,
         caption=None,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "voice": voice,
@@ -335,6 +323,9 @@ class BaleClient:
 
         if caption is not None:
             data["caption"] = caption
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -348,14 +339,18 @@ class BaleClient:
         chat_id,
         latitude,
         longitude,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "latitude": latitude,
             "longitude": longitude,
         }
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -364,23 +359,23 @@ class BaleClient:
             data,
         )
 
-    # ==================================
-    # MESSAGE MANAGEMENT
-    # ==================================
-
     async def edit_message_text(
         self,
         chat_id,
         message_id,
         text,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
-
         data = {
             "chat_id": chat_id,
             "message_id": message_id,
             "text": text,
         }
+
+        if reply_markup is not None:
+            data["reply_markup"] = reply_markup
 
         data.update(kwargs)
 
@@ -394,7 +389,6 @@ class BaleClient:
         chat_id,
         message_id,
     ):
-
         return await self.call(
             "deleteMessage",
             {
@@ -402,7 +396,3 @@ class BaleClient:
                 "message_id": message_id,
             },
         )
-
-    async def close(self):
-
-        await self.http.aclose()
