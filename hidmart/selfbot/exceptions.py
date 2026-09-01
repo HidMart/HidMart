@@ -3,16 +3,12 @@ class SelfBotError(Exception):
 
 
 class SelfBotConnectionError(SelfBotError):
-    """Connection error."""
+    """Connection failed."""
 
 
 class SelfBotAuthenticationError(SelfBotError):
-    """Authentication error."""
+    """Authentication failed."""
 
 
-class SelfBotAPIError(SelfBotError):
-    """API error."""
-
-
-class SelfBotNotImplementedError(SelfBotError):
-    """Transport operation is not implemented."""
+class SelfBotNotConnectedError(SelfBotError):
+    """Client is not connected."""
