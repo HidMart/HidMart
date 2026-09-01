@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import logging
 
@@ -19,23 +21,18 @@ from .handlers import (
     MediaAnyHandler,
 )
 
-
 logger = logging.getLogger("hidmart")
 
 
 class Bot:
-
     def __init__(
         self,
-        token,
-        poll_interval=1.0,
-        timeout=25,
+        token: str,
+        poll_interval: float = 1.0,
+        timeout: int = 25,
     ):
-
         if not token:
-            raise ValueError(
-                "Bot token is required"
-            )
+            raise ValueError("Bot token is required")
 
         self.token = token
         self.poll_interval = poll_interval
@@ -44,179 +41,220 @@ class Bot:
         self.client = BaleClient(token)
 
         self.handlers = []
-
         self.running = False
         self.offset = None
         self.me = None
 
-    # ==================================
-    # HANDLERS
-    # ==================================
+    # -------------------------------
+    # Handlers
+    # -------------------------------
+
+    def _add_handler(self, handler):
+        self.handlers.append(handler)
+        return handler
 
     def on_command(self, *commands):
-
         def decorator(callback):
-
-            self.handlers.append(
-                CommandHandler(
-                    commands,
-                    callback,
-                )
+            self._add_handler(
+                CommandHandler(commands, callback)
             )
-
             return callback
 
         return decorator
 
     def on_message(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 MessageHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_text(self, text):
-
         def decorator(callback):
-
-            self.handlers.append(
-                TextHandler(
-                    text,
-                    callback,
-                )
+            self._add_handler(
+                TextHandler(text, callback)
             )
-
             return callback
 
         return decorator
 
     def on_photo(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 PhotoHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_video(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 VideoHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_audio(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 AudioHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_document(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 DocumentHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_voice(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 VoiceHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_sticker(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 StickerHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_location(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 LocationHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_contact(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 ContactHandler(callback)
             )
-
             return callback
 
         return decorator
 
     def on_media(self):
-
         def decorator(callback):
-
-            self.handlers.append(
+            self._add_handler(
                 MediaAnyHandler(callback)
             )
-
             return callback
 
         return decorator
 
-    # ==================================
-    # SEND
-    # ==================================
+    # -------------------------------
+    # UI helpers
+    # -------------------------------
+
+    @staticmethod
+    def _markup(keyboard):
+        if keyboard is None:
+            return None
+
+        if hasattr(keyboard, "to_dict"):
+            return keyboard.to_dict()
+
+        if isinstance(keyboard, dict):
+            return keyboard
+
+        raise TypeError(
+            "reply_markup must be a dict or an object "
+            "with to_dict()"
+        )
+
+    async def send_keyboard(
+        self,
+        chat_id,
+        text,
+        keyboard,
+        **kwargs,
+    ):
+        """
+        Send a message with an HidMart UI keyboard.
+
+        Example:
+
+            keyboard = InlineKeyboard()
+            keyboard.row(
+                InlineButton(
+                    "OK",
+                    callback_data="ok",
+                )
+            )
+
+            await bot.send_keyboard(
+                chat_id,
+                "Choose:",
+                keyboard,
+            )
+        """
+
+        return await self.send_message(
+            chat_id,
+            text,
+            reply_markup=self._markup(keyboard),
+            **kwargs,
+        )
+
+    async def remove_keyboard(
+        self,
+        chat_id,
+        text="Keyboard removed.",
+        *,
+        selective=False,
+        **kwargs,
+    ):
+        from .ui import RemoveKeyboard
+
+        keyboard = RemoveKeyboard(
+            selective=selective
+        )
+
+        return await self.send_message(
+            chat_id,
+            text,
+            reply_markup=keyboard.to_dict(),
+            **kwargs,
+        )
+
+    # -------------------------------
+    # Sending
+    # -------------------------------
 
     async def send_message(
         self,
         chat_id,
         text,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_message(
             chat_id,
             text,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -225,13 +263,18 @@ class Bot:
         chat_id,
         photo,
         caption=None,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_photo(
             chat_id,
             photo,
-            caption,
+            caption=caption,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -240,13 +283,18 @@ class Bot:
         chat_id,
         video,
         caption=None,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_video(
             chat_id,
             video,
-            caption,
+            caption=caption,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -255,13 +303,18 @@ class Bot:
         chat_id,
         audio,
         caption=None,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_audio(
             chat_id,
             audio,
-            caption,
+            caption=caption,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -270,13 +323,18 @@ class Bot:
         chat_id,
         document,
         caption=None,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_document(
             chat_id,
             document,
-            caption,
+            caption=caption,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -285,13 +343,18 @@ class Bot:
         chat_id,
         voice,
         caption=None,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_voice(
             chat_id,
             voice,
-            caption,
+            caption=caption,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
@@ -300,66 +363,31 @@ class Bot:
         chat_id,
         latitude,
         longitude,
+        *,
+        reply_markup=None,
         **kwargs,
     ):
+        if hasattr(reply_markup, "to_dict"):
+            reply_markup = reply_markup.to_dict()
 
         return await self.client.send_location(
             chat_id,
             latitude,
             longitude,
+            reply_markup=reply_markup,
             **kwargs,
         )
 
-    # ==================================
-    # UPDATE
-    # ==================================
-
-    async def process_update(self, update):
-
-        if not isinstance(update, dict):
-            return
-
-        message_data = update.get("message")
-
-        if not message_data:
-            return
-
-        message = Message.from_dict(
-            message_data,
-            bot=self,
-        )
-
-        for handler in self.handlers:
-
-            try:
-
-                if hasattr(handler, "matches"):
-
-                    if not handler.matches(
-                        message
-                    ):
-                        continue
-
-                await handler.run(message)
-
-            except Exception:
-
-                logger.exception(
-                    "Handler error"
-                )
-
-    # ==================================
-    # INFO
-    # ==================================
+    # -------------------------------
+    # Information
+    # -------------------------------
 
     async def get_me(self):
         self.me = await self.client.get_me()
         return self.me
 
     async def get_chat(self, chat_id):
-        return await self.client.get_chat(
-            chat_id
-        )
+        return await self.client.get_chat(chat_id)
 
     async def get_chat_member(
         self,
@@ -377,7 +405,6 @@ class Bot:
         timeout=None,
         limit=None,
     ):
-
         if timeout is None:
             timeout = self.timeout
 
@@ -387,54 +414,75 @@ class Bot:
             limit=limit,
         )
 
-    # ==================================
-    # POLLING
-    # ==================================
+    # -------------------------------
+    # Update processing
+    # -------------------------------
+
+    async def process_update(self, update):
+        if not isinstance(update, dict):
+            return
+
+        message_data = update.get("message")
+
+        if not message_data:
+            return
+
+        message = Message.from_dict(
+            message_data,
+            bot=self,
+        )
+
+        for handler in self.handlers:
+            try:
+                if hasattr(handler, "matches"):
+                    if not handler.matches(message):
+                        continue
+
+                await handler.run(message)
+
+            except Exception:
+                logger.exception(
+                    "Handler error"
+                )
+
+    # -------------------------------
+    # Polling
+    # -------------------------------
 
     async def start(self):
-
         self.running = True
 
         self.me = await self.get_me()
 
         logger.info(
-            "Bot started: %s",
+            "HidMart bot started: %s",
             self.me,
         )
 
         await self.polling()
 
     async def polling(self):
-
         self.running = True
 
         while self.running:
-
             try:
-
                 updates = await self.get_updates(
                     offset=self.offset
                 )
 
                 if not updates:
-
                     await asyncio.sleep(
                         self.poll_interval
                     )
-
                     continue
 
                 for update in updates:
-
                     update_id = update.get(
                         "update_id"
                     )
 
                     if update_id is not None:
-
-                        self.offset = (
-                            update_id + 1
-                        )
+                        self.offset = update_id + 1
 
                     await self.process_update(
                         update
@@ -443,33 +491,25 @@ class Bot:
             except asyncio.CancelledError:
                 break
 
-            except Exception as exc:
-
+            except Exception:
                 logger.exception(
-                    "Polling error: %s",
-                    exc,
+                    "Polling error"
                 )
 
                 await asyncio.sleep(3)
 
     async def stop(self):
-
         self.running = False
-
         await self.client.close()
 
     def run(self):
-
         async def runner():
-
             try:
                 await self.start()
-
             finally:
                 await self.client.close()
 
         try:
             asyncio.run(runner())
-
         except KeyboardInterrupt:
             pass
