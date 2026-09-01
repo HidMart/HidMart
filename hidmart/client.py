@@ -13,9 +13,7 @@ from .exceptions import (
 
 class Client:
     """
-    HTTP client used internally by HidMart.
-
-    This class handles communication with Bale Bot API.
+    Internal asynchronous HTTP client for the Bale Bot API.
     """
 
     def __init__(
@@ -35,6 +33,10 @@ class Client:
         )
 
         self._client: Optional[httpx.AsyncClient] = None
+
+    # =========================
+    # Lifecycle
+    # =========================
 
     async def start(self):
         """Create the HTTP client."""
@@ -61,13 +63,17 @@ class Client:
     ):
         await self.close()
 
+    # =========================
+    # Request
+    # =========================
+
     async def request(
         self,
         method: str,
         data: Optional[Dict[str, Any]] = None,
     ) -> Any:
         """
-        Send a request to Bale Bot API.
+        Send a POST request to the Bale Bot API.
         """
 
         if self._client is None:
@@ -93,6 +99,7 @@ class Client:
 
         try:
             result = response.json()
+
         except ValueError as exc:
             raise APIError(
                 "Invalid JSON response from Bale API"
@@ -104,9 +111,7 @@ class Client:
                 "Unknown API error",
             )
 
-            raise APIError(
-                description
-            )
+            raise APIError(description)
 
         return result.get("result")
 
@@ -123,6 +128,10 @@ class Client:
             method,
             data,
         )
+
+    # =========================
+    # Information
+    # =========================
 
     async def get_me(self):
         return await self.call(
@@ -153,6 +162,10 @@ class Client:
             },
         )
 
+    # =========================
+    # Updates
+    # =========================
+
     async def get_updates(
         self,
         *,
@@ -175,6 +188,10 @@ class Client:
             "getUpdates",
             data,
         )
+
+    # =========================
+    # Sending
+    # =========================
 
     async def send_message(
         self,
@@ -359,6 +376,10 @@ class Client:
             data,
         )
 
+    # =========================
+    # Message management
+    # =========================
+
     async def edit_message_text(
         self,
         chat_id,
@@ -396,3 +417,10 @@ class Client:
                 "message_id": message_id,
             },
         )
+
+
+# ==========================================
+# Backward/internal compatibility
+# ==========================================
+
+BaleClient = Client
