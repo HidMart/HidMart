@@ -1,20 +1,19 @@
 class NewMessage:
+    def __init__(self, message):
+        self.message = message
 
-    def __init__(self, pattern=None):
-        self.pattern = pattern
+    @property
+    def text(self):
+        return self.message.text
 
-    def matches(self, message):
+    @property
+    def chat_id(self):
+        return self.message.chat.id if self.message.chat else None
 
-        if self.pattern is None:
-            return True
-
-        text = message.text or ""
-
-        if callable(self.pattern):
-            return bool(
-                self.pattern(text)
-            )
-
-        return text.startswith(
-            self.pattern
+    @property
+    def sender_id(self):
+        return (
+            self.message.from_user.id
+            if self.message.from_user
+            else None
         )
