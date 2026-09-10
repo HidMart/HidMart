@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 import os
 from pathlib import Path
@@ -19,6 +17,10 @@ class Session:
     @property
     def authorized(self):
         return bool(self.access_token)
+
+    @property
+    def is_authorized(self):
+        return self.authorized
 
     def set(
         self,
@@ -70,10 +72,7 @@ class Session:
                 encoding="utf-8",
             )
 
-            os.replace(
-                tmp,
-                self.path,
-            )
+            os.replace(tmp, self.path)
 
             try:
                 os.chmod(
@@ -107,20 +106,14 @@ class Session:
                 f"invalid session: {exc}"
             ) from exc
 
-        token = data.get(
-            "access_token"
-        )
+        token = data.get("access_token")
 
         if not token:
             return False
 
         self.access_token = token
-        self.user_id = data.get(
-            "user_id"
-        )
-        self.user_name = data.get(
-            "user_name"
-        )
+        self.user_id = data.get("user_id")
+        self.user_name = data.get("user_name")
 
         return True
 
