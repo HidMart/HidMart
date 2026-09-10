@@ -16,10 +16,3 @@ class ProtocolError(HidMartError):
 
 class SessionError(HidMartError):
     pass
-
-
-class RPCError(HidMartError):
-    def __init__(self, code=None, message="RPC request failed"):
-        self.code = code
-        self.message = message
-        super().__init__(message)
