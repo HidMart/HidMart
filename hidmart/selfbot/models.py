@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional
@@ -7,16 +5,13 @@ from typing import Any, Optional
 
 @dataclass(slots=True)
 class User:
-
     id: int
-
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
     @property
     def full_name(self):
-
         return " ".join(
             x
             for x in (
@@ -29,9 +24,7 @@ class User:
 
 @dataclass(slots=True)
 class Chat:
-
     id: str
-
     title: Optional[str] = None
     username: Optional[str] = None
     type: str = "unknown"
@@ -51,49 +44,22 @@ class Message:
 
     outgoing: bool = False
 
+    media_type: Optional[str] = None
+
+    media_path: Optional[str] = None
+
     raw: Any = None
 
     client: Any = None
 
-    async def reply(
-        self,
-        text: str,
-    ):
-
-        if self.client is None:
-            raise RuntimeError(
-                "Message has no client"
-            )
-
+    async def reply(self, text):
         return await self.client.send_message(
             self.chat_id,
             text,
             reply_to=self.id,
         )
 
-    async def edit(
-        self,
-        text: str,
-    ):
-
-        if self.client is None:
-            raise RuntimeError(
-                "Message has no client"
-            )
-
-        return await self.client.edit_message(
-            self.chat_id,
-            self.id,
-            text,
-        )
-
     async def delete(self):
-
-        if self.client is None:
-            raise RuntimeError(
-                "Message has no client"
-            )
-
         return await self.client.delete_message(
             self.chat_id,
             self.id,
