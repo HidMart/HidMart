@@ -1,10 +1,12 @@
-from __future__ import annotations
-
 import asyncio
 import os
 
-from .errors import AuthenticationError
+from .errors import (
+    AuthenticationError,
+    ProtocolError,
+)
 from .events import EventDispatcher
+from .models import Message
 from .rpc import RPCClient
 from .session import Session
 from .transport import BaleTransport
@@ -26,14 +28,10 @@ class SelfBot:
         url=DEFAULT_URL,
     ):
 
-        self.session = Session(
-            session
-        )
+        self.session = Session(session)
 
         if token:
-            self.session.set(
-                token
-            )
+            self.session.set(token)
         else:
             self.session.load()
 
@@ -46,56 +44,38 @@ class SelfBot:
             self.transport
         )
 
-        self.events = (
-            EventDispatcher()
-        )
+        self.events = EventDispatcher()
 
         self.running = False
         self._task = None
 
     @property
     def authorized(self):
-
         return self.session.authorized
 
     @property
-    def connected(self):
+    def is_authorized(self):
+        return self.authorized
 
+    @property
+    def connected(self):
         return self.transport.connected
 
-    def set_token(
-        self,
-        token,
-    ):
+    def set_token(self, token):
 
-        self.session.set(
-            token
-        )
-
+        self.session.set(token)
         self.session.save()
 
         self.transport.token = token
 
-    def on(
-        self,
-        event,
-    ):
-
-        return self.events.decorator(
-            event
-        )
+    def on(self, event):
+        return self.events.decorator(event)
 
     def on_message(self):
-
-        return self.on(
-            "message"
-        )
+        return self.on("message")
 
     def on_update(self):
-
-        return self.on(
-            "update"
-        )
+        return self.on("update")
 
     async def connect(self):
 
@@ -117,9 +97,7 @@ class SelfBot:
 
             try:
 
-                data = (
-                    await self.transport.receive()
-                )
+                data = await self.transport.receive()
 
                 await self.events.emit(
                     "raw",
@@ -141,28 +119,19 @@ class SelfBot:
                     exc,
                 )
 
-                await asyncio.sleep(
-                    2
-                )
-
-                try:
-                    await self.transport.connect()
-                except Exception:
-                    pass
+                await asyncio.sleep(2)
 
     async def start(self):
-
-        await self.connect()
 
         if self.running:
             return
 
+        await self.connect()
+
         self.running = True
 
-        self._task = (
-            asyncio.create_task(
-                self._reader()
-            )
+        self._task = asyncio.create_task(
+            self._reader()
         )
 
         await self.events.emit(
@@ -175,14 +144,10 @@ class SelfBot:
         await self.start()
 
         try:
-
             while self.running:
-                await asyncio.sleep(
-                    3600
-                )
+                await asyncio.sleep(3600)
 
         finally:
-
             await self.stop()
 
     async def stop(self):
@@ -208,5 +173,46 @@ class SelfBot:
         )
 
     async def disconnect(self):
-
         await self.stop()
+
+    async def send_message(
+        self,
+        chat_id,
+        text,
+        *,
+        reply_to=None,
+    ):
+        raise ProtocolError(
+            "Bale SendMessage RPC is not mapped yet"
+        )
+
+    async def send_photo(
+        self,
+        chat_id,
+        path,
+        *,
+        caption=None,
+    ):
+        raise ProtocolError(
+            "Bale photo upload RPC is not mapped yet"
+        )
+
+    async def send_video(
+        self,
+        chat_id,
+        path,
+        *,
+        caption=None,
+    ):
+        raise ProtocolError(
+            "Bale video upload RPC is not mapped yet"
+        )
+
+    async def delete_message(
+        self,
+        chat_id,
+        message_id,
+    ):
+        raise ProtocolError(
+            "Bale DeleteMessage RPC is not mapped yet"
+        )
